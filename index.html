@@ -3,358 +3,313 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ElanBazar - Elanlar Saytı</title>
+<title>ElanBazar</title>
 <style>
-  :root{
-    --bg:#f4f5f7; --card:#ffffff; --border:#e3e5e9; --border-strong:#c9ccd2;
-    --text:#1c1e21; --text2:#5b5f66; --muted:#8b8f97;
-    --accent:#178a5b; --accent-dark:#0f6a45; --accent-bg:#e6f5ee;
-    --danger:#d33a2c; --vip:#ffb703; --vip-bg:#fff9e6;
-    --radius:10px;
+  :root {
+    --bg: #f4f5f7; --card: #ffffff; --border: #e3e5e9;
+    --text: #1c1e21; --muted: #8b8f97; --accent: #178a5b;
+    --vip: #ffb703; --vip-bg: #fff9e6; --danger: #d33a2c;
   }
-  *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
-  a{text-decoration:none;color:inherit;}
-  button{font-family:inherit;cursor:pointer;}
-  input,select,textarea{font-family:inherit;}
-
-  header{position:sticky;top:0;z-index:50;background:var(--accent);color:#fff;padding:10px 14px;}
-  .header-row{display:flex;align-items:center;gap:10px;}
-  .logo{font-weight:700;font-size:19px;letter-spacing:-0.5px;white-space:nowrap;}
-  .search-box{flex:1;display:flex;background:#fff;border-radius:8px;overflow:hidden;}
-  .search-box input{flex:1;border:none;padding:9px 10px;font-size:14px;outline:none;color:var(--text);}
-  .search-box button{border:none;background:#fff;padding:0 10px;color:var(--accent);font-size:16px;}
-  .auth-nav-btn{background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;}
-
-  main{max-width:480px;margin:0 auto;padding:12px;padding-bottom:70px;}
-
-  .crumb{font-size:13px;color:var(--text2);margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-  .crumb span.sep{color:var(--muted);}
-  .crumb a{color:var(--accent-dark);}
-
-  .cat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-  .cat-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;}
-  .cat-card .icon{width:40px;height:40px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent-dark);}
-  .cat-card .name{font-size:13.5px;font-weight:500;line-height:1.3;}
-  .cat-card .count{font-size:11.5px;color:var(--muted);}
-
-  h1.section-title{font-size:16px;font-weight:600;margin:18px 0 10px;}
-
-  .subcat-list{display:flex;flex-direction:column;background:var(--card);border-radius:12px;border:0.5px solid var(--border);overflow:hidden;}
-  .subcat-row{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-bottom:0.5px solid var(--border);font-size:14.5px;cursor:pointer;}
-  .subcat-row:last-child{border-bottom:none;}
-  .subcat-row .cnt{color:var(--muted);font-size:12.5px;}
-  .subcat-row .chev{color:var(--muted);}
-
-  .listing-list{display:flex;flex-direction:column;gap:10px;}
-  .listing-card{display:flex;gap:10px;background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:10px;cursor:pointer;position:relative;}
-  .listing-card.is-vip{background:var(--vip-bg);border:1.5px solid var(--vip);}
-  .vip-tag{position:absolute;top:8px;right:8px;background:var(--vip);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;}
-  .listing-thumb{width:78px;height:78px;border-radius:8px;background:var(--accent-bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent-dark);overflow:hidden;}
-  .listing-thumb img{width:100%;height:100%;object-fit:cover;}
-  .listing-info{flex:1;min-width:0;}
-  .listing-title{font-size:14px;font-weight:500;margin:0 0 4px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-  .listing-price{font-size:15px;font-weight:600;color:var(--accent-dark);margin:0 0 4px;}
-  .listing-meta{font-size:12px;color:var(--muted);}
-
-  .empty-state{text-align:center;padding:40px 16px;color:var(--muted);}
-  .empty-state .big-icon{font-size:34px;margin-bottom:10px;}
-
-  .detail-img{width:100%;aspect-ratio:4/3;background:var(--accent-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--accent-dark);overflow:hidden;margin-bottom:12px;}
-  .detail-img img{width:100%;height:100%;object-fit:cover;}
-  .detail-price{font-size:22px;font-weight:700;color:var(--accent-dark);margin:0 0 4px;}
-  .detail-title{font-size:16px;font-weight:600;margin:0 0 8px;}
-  .detail-meta-row{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-bottom:14px;flex-wrap:wrap;}
-  .detail-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;}
-  .detail-card h3{font-size:13px;color:var(--text2);margin:0 0 8px;font-weight:500;}
-  .detail-card p{font-size:14px;line-height:1.6;margin:0;white-space:pre-wrap;}
-  .contact-row{display:flex;align-items:center;gap:10px;}
-  .contact-row .av{width:36px;height:36px;border-radius:50%;background:var(--accent-bg);color:var(--accent-dark);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;}
-  .call-btn{display:block;width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;margin-top:10px;}
-
-  .bonus-box{background:linear-gradient(135deg, #178a5b, #0f6a45);color:#fff;border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
-  .bonus-amount{font-size:20px;font-weight:700;}
-
-  .form-group{margin-bottom:14px;}
-  .form-group label{display:block;font-size:13px;color:var(--text2);margin-bottom:5px;font-weight:500;}
-  .form-group input, .form-group select, .form-group textarea{width:100%;border:0.5px solid var(--border-strong);border-radius:8px;padding:10px;font-size:14.5px;background:#fff;color:var(--text);}
-  .form-group textarea{min-height:90px;resize:vertical;}
-  .form-row{display:flex;gap:10px;}
-  .form-row .form-group{flex:1;}
-  .submit-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:600;margin-top:6px;}
-  .logout-btn{width:100%;background:var(--danger);color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;margin-top:14px;}
-  .vip-btn{background:var(--vip);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;margin-top:6px;}
-  .del-btn{background:var(--danger);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;}
-
-  .auth-tabs{display:flex;margin-bottom:16px;border-bottom:1px solid var(--border);}
-  .auth-tab{flex:1;text-align:center;padding:10px;font-weight:600;cursor:pointer;color:var(--text2);}
-  .auth-tab.active{color:var(--accent-dark);border-bottom:2px solid var(--accent-dark);}
-
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid var(--border);display:flex;z-index:50;}
-  .bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;font-size:11px;color:var(--muted);cursor:pointer;}
-  .bottom-nav a.active{color:var(--accent-dark);}
-  .bottom-nav .ic{font-size:19px;}
-
-  .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;}
-  .toast.show{opacity:1;}
-  .action-btns{display:flex;gap:6px;margin-top:6px;}
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); }
+  header { position: sticky; top: 0; z-index: 50; background: var(--accent); padding: 10px; color: #fff; }
+  .h-row { display: flex; gap: 8px; align-items: center; }
+  .logo { font-weight: bold; font-size: 18px; cursor: pointer; color: #fff; text-decoration: none; }
+  .s-box { flex: 1; display: flex; background: #fff; border-radius: 6px; overflow: hidden; }
+  .s-box input { flex: 1; border: none; padding: 8px; font-size: 14px; outline: none; }
+  .s-box button { border: none; background: #fff; padding: 0 8px; cursor: pointer; }
+  .user-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+  
+  main { max-width: 480px; margin: 0 auto; padding: 12px; padding-bottom: 70px; }
+  
+  .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+  .cat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; }
+  .cat-icon { font-size: 22px; }
+  .cat-title { font-size: 13px; font-weight: bold; margin-top: 4px; }
+  
+  .sec-title { font-size: 16px; font-weight: bold; margin: 12px 0 8px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+  
+  .item-card { display: flex; gap: 10px; position: relative; cursor: pointer; }
+  .item-card.is-vip { background: var(--vip-bg); border-color: var(--vip); }
+  .vip-badge { position: absolute; top: 6px; right: 6px; background: var(--vip); color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+  .item-img { width: 70px; height: 70px; background: #e0f2fe; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .item-title { font-size: 14px; font-weight: 500; margin: 0 0 4px; }
+  .item-price { font-size: 15px; font-weight: bold; color: var(--accent); margin: 0 0 4px; }
+  .item-meta { font-size: 11px; color: var(--muted); }
+  
+  .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+  .btn-del { background: var(--danger); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; }
+  .btn-vip { background: var(--vip); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color: #fff; }
+  
+  .inp { width: 100%; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+  label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+  
+  .b-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 50; }
+  .b-nav a { flex: 1; text-align: center; padding: 8px 0; color: var(--muted); text-decoration: none; font-size: 11px; cursor: pointer; }
+  .b-nav a.active { color: var(--accent); font-weight: bold; }
+  
+  .toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; display: none; z-index: 100; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-row" id="header-row"></div>
+  <div class="h-row">
+    <a class="logo" onclick="goPage('home')">ElanBazar</a>
+    <div class="s-box">
+      <input type="text" id="s-input" placeholder="Axtarış...">
+      <button onclick="search()">🔍</button>
+    </div>
+    <div id="u-header"></div>
+  </div>
 </header>
 
-<main id="main"></main>
+<main id="app"></main>
 
-<div class="bottom-nav" id="bottom-nav"></div>
-<div class="toast" id="toast"></div>
+<div class="b-nav">
+  <a id="n-home" onclick="goPage('home')">🏠<br>Ana Səhifə</a>
+  <a id="n-add" onclick="goPage('add')">➕<br>Elan ver</a>
+  <a id="n-my" onclick="goPage('my')">👤<br>Hesabım</a>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
-const BONUS_PER_POST = 5; 
-const VIP_COST = 10;      
-
-const CATEGORIES = [
-  {id:'elektronika', name:'Elektronika', icon:'💻', subs:['Noutbuk','Planşet','Foto/Video kamera','Oyun konsolları','Kompüter aksesuarları','Televizor','Digər elektronika']},
-  {id:'neqliyyat', name:'Nəqliyyat', icon:'🚗', subs:['Minik avtomobilləri','Motosikletlər','Velosipedlər','Yük nəqliyyatı','Su nəqliyyatı','Digər nəqliyyat']},
-  {id:'ehtiyat', name:'Ehtiyat hissələri', icon:'🔧', subs:['Mühərrik hissələri','Şin/Disklər','Akkumulyatorlar','Audio/siqnalizasiya','Salon aksesuarları','Digər ehtiyat hissələri']},
-  {id:'emlak', name:'Daşınmaz Əmlak', icon:'🏠', subs:['Mənzil satılır','Mənzil kirayə','Həyət evi/Villa','Torpaq sahəsi','Ofis/Obyekt','Qaraj']},
-  {id:'meiset', name:'Məişət texnikası', icon:'🍳', subs:['Soyuducu','Paltaryuyan maşın','Kondisioner','Mətbəx texnikası','Toz sorucu','Digər məişət texnikası']},
-  {id:'telefon', name:'Telefon', icon:'📱', subs:['Smartfonlar','Düyməli telefonlar','Telefon aksesuarları','Ehtiyat hissələri (telefon)']},
-  {id:'is', name:'İş elanları', icon:'💼', subs:['Tam ştat','Yarım ştat','Uzaqdan iş','Təcrübə/Stajirovka','Gündəlik iş']},
+const CATS = [
+  {id:'tel', name:'Telefonlar', icon:'📱'},
+  {id:'auto', name:'Nəqliyyat', icon:'🚗'},
+  {id:'emlak', name:'Daşınmaz Əmlak', icon:'🏠'},
+  {id:'elek', name:'Elektronika', icon:'💻'}
 ];
 
-const CITIES = ['Bakı','Gəncə','Sumqayıt','Mingəçevir','Şəki','Xankəndi','Naxçıvan','Lənkəran','Şirvan'];
-
-let LISTINGS = JSON.parse(localStorage.getItem('eb_listings')) || [
-  {id:'1', title:'iPhone 13 Pro 128GB Blue', category:'telefon', subcategory:'Smartfonlar', price:1350, city:'Bakı', createdAt: Date.now() - 3600000, isVip: true, sellerName:'Əli M.', phone:'+994501234567', description:'Əla vəziyyətdədir, heç bir problemi yoxdur.', userId:'u0'},
-  {id:'2', title:'BMW 525i E39 2.5L 2002', category:'neqliyyat', subcategory:'Minik avtomobilləri', price:12800, city:'Gəncə', createdAt: Date.now() - 86400000, isVip: false, sellerName:'Rəşad', phone:'+994559876543', description:'Təcili satılır, real alıcıya endirim olacaq.', userId:'u0'}
+let items = JSON.parse(localStorage.getItem('eb_items')) || [
+  {id:'1', title:'iPhone 13 Pro 128GB', cat:'tel', price:1350, city:'Bakı', name:'Əli', phone:'0501234567', desc:'Təmiz telefondur.', vip:true, uid:'0'},
+  {id:'2', title:'BMW 525i 2002', cat:'auto', price:12000, city:'Gəncə', name:'Vusal', phone:'0559876543', desc:'Əla vəziyyətdə.', vip:false, uid:'0'}
 ];
 
-// Qeydiyyat/giriş edilməyibsə istifadəçi boş olacaq
-let CURRENT_USER = JSON.parse(localStorage.getItem('eb_user')) || null;
-let ROUTE = {page:'home'};
+let user = JSON.parse(localStorage.getItem('eb_user')) || null;
+let page = 'home';
+let pageData = null;
 
-function saveListings(){ localStorage.setItem('eb_listings', JSON.stringify(LISTINGS)); }
-function saveUser(){ localStorage.setItem('eb_user', JSON.stringify(CURRENT_USER)); }
+function saveState() {
+  localStorage.setItem('eb_items', JSON.stringify(items));
+  localStorage.setItem('eb_user', JSON.stringify(user));
+}
 
-function esc(s){ const d=document.createElement('div'); d.innerText = s==null?'':String(s); return d.innerHTML; }
-function fmtPrice(n, cat){
-  if(cat==='is') return esc(n) + ' AZN/ay';
-  return Number(n).toLocaleString('az-AZ') + ' AZN';
-}
-function timeAgo(ts){
-  const diff = Math.floor((Date.now()-ts)/1000);
-  if(diff<60) return 'indicə';
-  if(diff<3600) return Math.floor(diff/60)+' dəq əvvəl';
-  if(diff<86400) return Math.floor(diff/3600)+' saat əvvəl';
-  return Math.floor(diff/86400)+' gün əvvəl';
-}
-function showToast(msg){
-  const t=document.getElementById('toast');
+function showToast(msg) {
+  const t = document.getElementById('toast');
   t.innerText = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 1800);
-}
-function nav(route){ ROUTE = route; window.scrollTo(0,0); render(); }
-function catById(id){ return CATEGORIES.find(c=>c.id===id); }
-
-function sortListings(list){
-  return [...list].sort((a,b)=>{
-    if(a.isVip && !b.isVip) return -1;
-    if(!a.isVip && b.isVip) return 1;
-    return b.createdAt - a.createdAt;
-  });
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2000);
 }
 
-function renderHeader(){
-  const row = document.getElementById('header-row');
-  row.innerHTML = `
-    <a href="#" onclick="nav({page:'home'});return false;" class="logo">ElanBazar</a>
-    <div class="search-box">
-      <input id="search-input" type="text" placeholder="Nə axtarırsınız?" value="${ROUTE.page==='search'&&ROUTE.query?esc(ROUTE.query):''}"/>
-      <button onclick="doSearch()">🔍</button>
-    </div>
-    ${CURRENT_USER ? 
-      `<button class="auth-nav-btn" onclick="nav({page:'my'})">${esc(CURRENT_USER.name)} (${CURRENT_USER.bonus||0} bonus)</button>` : 
-      `<button class="auth-nav-btn" onclick="nav({page:'auth', tab:'login'})">Giriş</button>`
+function goPage(p, data=null) {
+  page = p;
+  pageData = data;
+  render();
+  window.scrollTo(0, 0);
+}
+
+function search() {
+  const q = document.getElementById('s-input').value.trim();
+  if(q) goPage('search', q);
+}
+
+function renderHeader() {
+  const box = document.getElementById('u-header');
+  if(user) {
+    box.innerHTML = `<button class="user-btn" onclick="goPage('my')">${user.name} (${user.bonus||0} B)</button>`;
+  } else {
+    box.innerHTML = `<button class="user-btn" onclick="goPage('auth')">Giriş</button>`;
+  }
+}
+
+function renderNav() {
+  document.getElementById('n-home').className = page==='home'?'active':'';
+  document.getElementById('n-add').className = page==='add'?'active':'';
+  document.getElementById('n-my').className = page==='my'?'active':'';
+}
+
+function render() {
+  renderHeader();
+  renderNav();
+  const app = document.getElementById('app');
+
+  if(page === 'home') {
+    let html = `<div class="cat-grid">`;
+    CATS.forEach(c => {
+      html += `<div class="cat-card" onclick="goPage('cat', '${c.id}')">
+        <div class="cat-icon">${c.icon}</div>
+        <div class="cat-title">${c.name}</div>
+      </div>`;
+    });
+    html += `</div><div class="sec-title">Son Elanlar</div>`;
+    html += renderList(items);
+    app.innerHTML = html;
+  }
+  else if(page === 'cat') {
+    const list = items.filter(i => i.cat === pageData);
+    app.innerHTML = `<div class="sec-title">Kateqoriya elanları</div>` + renderList(list);
+  }
+  else if(page === 'search') {
+    const list = items.filter(i => i.title.toLowerCase().includes(pageData.toLowerCase()));
+    app.innerHTML = `<div class="sec-title">Axtarış: "${pageData}"</div>` + renderList(list);
+  }
+  else if(page === 'detail') {
+    const item = items.find(i => i.id === pageData);
+    if(!item) return app.innerHTML = 'Elan tapılmadı';
+    app.innerHTML = `
+      <div class="card">
+        <div style="font-size:40px;text-align:center;padding:20px;background:#e0f2fe;border-radius:6px;">📦</div>
+        <h2>${item.title}</h2>
+        <h3 style="color:var(--accent);">${item.price} AZN</h3>
+        <p><b>Şəhər:</b> ${item.city}</p>
+        <p><b>Məlumat:</b> ${item.desc || 'Yoxdur'}</p>
+        <hr style="border:none;border-top:1px solid var(--border);">
+        <p><b>Satan:</b> ${item.name}</p>
+        <button class="btn" onclick="showToast('Əlaqə: ${item.phone}')">📞 Nömrəni göstər</button>
+      </div>`;
+  }
+  else if(page === 'add') {
+    if(!user) {
+      app.innerHTML = `<div class="card" style="text-align:center;">
+        <p>Elan vermək üçün hesabınıza daxil olun.</p>
+        <button class="btn" onclick="goPage('auth')">Daxil ol / Qeydiyyat</button>
+      </div>`;
+      return;
     }
-  `;
-}
-
-function doSearch(){
-  const q = document.getElementById('search-input').value.trim();
-  if(!q) return;
-  nav({page:'search', query:q});
-}
-
-function renderBottomNav(){
-  const nb = document.getElementById('bottom-nav');
-  const active = (p)=> ROUTE.page===p ? 'active' : '';
-  nb.innerHTML = `
-    <a class="${active('home')}" onclick="nav({page:'home'})"><span class="ic">🏠</span>Ana səhifə</a>
-    <a class="${active('add')}" onclick="nav({page:'add'})"><span class="ic">➕</span>Elan ver</a>
-    <a class="${active('my')}" onclick="nav({page:'my'})"><span class="ic">👤</span>Hesabım</a>
-  `;
-}
-
-function pageHome(){
-  const totalCount = (catId)=> LISTINGS.filter(l=>l.category===catId).length;
-  let html = `<h1 class="section-title" style="margin-top:4px;">Kateqoriyalar</h1><div class="cat-grid">`;
-  CATEGORIES.forEach(c=>{
-    html += `<div class="cat-card" onclick="nav({page:'category',cat:'${c.id}'})">
-      <div class="icon">${c.icon}</div>
-      <div class="name">${esc(c.name)}</div>
-      <div class="count">${totalCount(c.id)} elan</div>
-    </div>`;
-  });
-  html += `</div>`;
-
-  const recent = sortListings(LISTINGS).slice(0,10);
-  html += `<h1 class="section-title">Son elanlar</h1>`;
-  html += renderListingList(recent);
-  return html;
-}
-
-function pageCategory(){
-  const cat = catById(ROUTE.cat);
-  if(!cat) return `<p>Kateqoriya tapılmadı.</p>`;
-  let html = `<div class="crumb"><a href="#" onclick="nav({page:'home'});return false;">Ana səhifə</a><span class="sep">›</span><span>${esc(cat.name)}</span></div>`;
-  html += `<div class="subcat-list">`;
-  cat.subs.forEach(s=>{
-    const cnt = LISTINGS.filter(l=>l.category===cat.id && l.subcategory===s).length;
-    html += `<div class="subcat-row" onclick="nav({page:'listings',cat:'${cat.id}',sub:'${esc(s)}'})">
-      <span>${esc(s)}</span>
-      <span style="display:flex;align-items:center;gap:6px;"><span class="cnt">${cnt}</span><span class="chev">›</span></span>
-    </div>`;
-  });
-  html += `</div>`;
-  html += `<h1 class="section-title">Bütün "${esc(cat.name)}" elanları</h1>`;
-  const items = sortListings(LISTINGS.filter(l=>l.category===cat.id));
-  html += renderListingList(items);
-  return html;
-}
-
-function pageListings(){
-  let items = LISTINGS;
-  if(ROUTE.cat) items = items.filter(l=>l.category===ROUTE.cat);
-  if(ROUTE.sub) items = items.filter(l=>l.subcategory===ROUTE.sub);
-  const cat = catById(ROUTE.cat);
-  let html = `<div class="crumb"><a href="#" onclick="nav({page:'home'});return false;">Ana səhifə</a><span class="sep">›</span><a href="#" onclick="nav({page:'category',cat:'${ROUTE.cat}'});return false;">${esc(cat?cat.name:'')}</a><span class="sep">›</span><span>${esc(ROUTE.sub)}</span></div>`;
-  html += `<h1 class="section-title">${esc(ROUTE.sub)}</h1>`;
-  html += renderListingList(sortListings(items));
-  return html;
-}
-
-function pageSearch(){
-  const q = (ROUTE.query||'').toLowerCase();
-  const filtered = LISTINGS.filter(l => l.title.toLowerCase().includes(q) || (l.description&&l.description.toLowerCase().includes(q)));
-  let html = `<div class="crumb"><a href="#" onclick="nav({page:'home'});return false;">Ana səhifə</a><span class="sep">›</span><span>Axtarış</span></div>`;
-  html += `<h1 class="section-title">Axtarış nəticələri: "${esc(ROUTE.query)}"</h1>`;
-  html += renderListingList(sortListings(filtered));
-  return html;
-}
-
-function renderListingList(items, showManageBtns = false){
-  if(items.length===0){
-    return `<div class="empty-state"><div class="big-icon">🔍</div>Elan tapılmadı</div>`;
+    app.innerHTML = `
+      <div class="card">
+        <div class="sec-title">Yeni Elan</div>
+        <label>Başlıq</label>
+        <input type="text" id="f-title" class="inp" placeholder="Məs: iPhone 12">
+        <label>Kateqoriya</label>
+        <select id="f-cat" class="inp">
+          ${CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
+        </select>
+        <label>Qiymət (AZN)</label>
+        <input type="number" id="f-price" class="inp" placeholder="100">
+        <label>Şəhər</label>
+        <input type="text" id="f-city" class="inp" value="Bakı">
+        <label>Ətraflı</label>
+        <textarea id="f-desc" class="inp" placeholder="Məlumat..."></textarea>
+        <button class="btn" onclick="submitAdd()">Dərc et (+5 bonus)</button>
+      </div>`;
   }
-  let html = `<div class="listing-list">`;
-  items.forEach(l=>{
-    const cat = catById(l.category);
-    html += `<div class="listing-card ${l.isVip?'is-vip':''}" onclick="nav({page:'detail',id:'${l.id}'})">
-      ${l.isVip ? `<div class="vip-tag">VIP</div>` : ''}
-      <div class="listing-thumb">${l.image?`<img src="${esc(l.image)}"/>`:(cat?cat.icon:'')}</div>
-      <div class="listing-info">
-        <p class="listing-title">${esc(l.title)}</p>
-        <p class="listing-price">${fmtPrice(l.price, l.category)}</p>
-        <p class="listing-meta">${esc(l.city)} · ${timeAgo(l.createdAt)}</p>
-        ${showManageBtns ? `
-          <div class="action-btns" onclick="event.stopPropagation()">
-            ${!l.isVip ? `<button class="vip-btn" onclick="makeVip('${l.id}')">VIP et (${VIP_COST} bonus)</button>` : ''}
-            <button class="del-btn" onclick="deleteListing('${l.id}')">Sil</button>
-          </div>
-        ` : ''}
+  else if(page === 'my') {
+    if(!user) return goPage('auth');
+    const myItems = items.filter(i => i.uid === user.id);
+    app.innerHTML = `
+      <div class="card">
+        <h3>${user.name}</h3>
+        <p>Telefon: ${user.phone || 'Təyin edilməyib'}</p>
+        <p>Balans: <b>${user.bonus||0} Bonus</b></p>
+        <button class="btn" style="background:var(--danger);" onclick="logout()">Çıxış et</button>
       </div>
-    </div>`;
-  });
-  html += `</div>`;
-  return html;
-}
-
-function pageDetail(){
-  const l = LISTINGS.find(x=>x.id===ROUTE.id);
-  if(!l) return `<p>Elan tapılmadı.</p>`;
-  const cat = catById(l.category);
-  let html = `<div class="crumb"><a href="#" onclick="nav({page:'home'});return false;">Ana səhifə</a><span class="sep">›</span><a href="#" onclick="nav({page:'category',cat:'${l.category}'});return false;">${esc(cat?cat.name:'')}</a></div>`;
-  html += `<div class="detail-img">${l.image?`<img src="${esc(l.image)}"/>`:(cat?cat.icon:'')}</div>`;
-  html += `<p class="detail-price">${fmtPrice(l.price, l.category)} ${l.isVip?'<span class="vip-tag" style="position:static;display:inline-block;margin-left:8px;">VIP</span>':''}</p>`;
-  html += `<p class="detail-title">${esc(l.title)}</p>`;
-  html += `<div class="detail-meta-row"><span>📍 ${esc(l.city)}</span><span>🕒 ${timeAgo(l.createdAt)}</span><span>${esc(cat?cat.name:'')}${l.subcategory?' · '+esc(l.subcategory):''}</span></div>`;
-  html += `<div class="detail-card"><h3>Təsvir</h3><p>${esc(l.description||'Təsvir yoxdur.')}</p></div>`;
-  html += `<div class="detail-card">
-    <h3>Əlaqə</h3>
-    <div class="contact-row">
-      <div class="av">${esc((l.sellerName||'İ').charAt(0).toUpperCase())}</div>
-      <div><div style="font-size:14px;font-weight:500;">${esc(l.sellerName||'İstifadəçi')}</div><div style="font-size:12.5px;color:var(--muted);">Elan sahibi</div></div>
-    </div>
-    <button class="call-btn" onclick="showToast('Nömrə: ${esc(l.phone||'qeyd olunmayıb')}')">📞 ${esc(l.phone||'Nömrəni göstər')}</button>
-  </div>`;
-  return html;
-}
-
-function pageAdd(){
-  if(!CURRENT_USER) {
-    return `<div class="empty-state">
-      <div class="big-icon">🔒</div>
-      <p>Elan yerləşdirib bonus qazanmaq üçün hesabınıza daxil olun.</p>
-      <button class="submit-btn" style="width:auto;padding:10px 20px;" onclick="nav({page:'auth', tab:'login'})">Giriş et / Qeydiyyat</button>
-    </div>`;
+      <div class="sec-title">Elanlarım (${myItems.length})</div>
+      ${renderList(myItems, true)}
+    `;
   }
+  else if(page === 'auth') {
+    app.innerHTML = `
+      <div class="card">
+        <div class="sec-title">Giriş və ya Qeydiyyat</div>
+        <label>Adınız</label>
+        <input type="text" id="a-name" class="inp" placeholder="Məs: Əli">
+        <label>Telefon</label>
+        <input type="text" id="a-phone" class="inp" placeholder="0501234567">
+        <button class="btn" onclick="submitAuth()">Daxil ol</button>
+      </div>`;
+  }
+}
 
-  let catOpts = CATEGORIES.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
-  let cityOpts = CITIES.map(c=>`<option value="${c}">${esc(c)}</option>`).join('');
+function renderList(list, isMy = false) {
+  if(!list.length) return `<p style="text-align:center;color:var(--muted);">Elan tapılmadı.</p>`;
+  let html = '';
+  list.forEach(i => {
+    html += `
+      <div class="card item-card ${i.vip?'is-vip':''}" onclick="goPage('detail', '${i.id}')">
+        ${i.vip ? `<div class="vip-badge">VIP</div>` : ''}
+        <div class="item-img">📦</div>
+        <div style="flex:1;">
+          <div class="item-title">${i.title}</div>
+          <div class="item-price">${i.price} AZN</div>
+          <div class="item-meta">${i.city}</div>
+          ${isMy ? `
+            <div style="margin-top:6px;display:flex;gap:6px;" onclick="event.stopPropagation()">
+              ${!i.vip ? `<button class="btn-vip" onclick="makeVip('${i.id}')">VIP et (10B)</button>` : ''}
+              <button class="btn-del" onclick="delItem('${i.id}')">Sil</button>
+            </div>
+          ` : ''}
+        </div>
+      </div>`;
+  });
+  return html;
+}
 
-  return `
-    <h1 class="section-title">Yeni elan yerləşdir</h1>
-    <div class="detail-card">
-      <form onsubmit="handleAddListing(event)">
-        <div class="form-group">
-          <label>Başlıq *</label>
-          <input type="text" id="add-title" required placeholder="Məsələn: iPhone 13 Pro">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Kateqoriya *</label>
-            <select id="add-cat" onchange="updateSubcatSelect()" required>
-              <option value="">Seçin</option>
-              ${catOpts}
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Alt kateqoriya</label>
-            <select id="add-sub"><option value="">Əvvəlcə kateqoriya seçin</option></select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Qiymət (AZN) *</label>
-            <input type="number" id="add-price" required placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Şəhər *</label>
-            <select id="add-city">${cityOpts}</select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Şəkil URL (İstəyə bağlı)</label>
-          <input type="url" id="add-image" placeholder="https://site.com/image.jpg">
-        </div>
-        <div class="form-group">
-          <label>Ətraflı məlumat</label>
-          <textarea id="add-desc" placeholder="Elan haqqında geniş məlumat yazın..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>Telefon *</label>
-          <input type="tel" id="add-phone" required placeholder="+994 50 000 00 00" value
+function submitAdd() {
+  const title = document.getElementById('f-title').value.trim();
+  const price = document.getElementById('f-price').value;
+  if(!title || !price) return showToast('Başlıq və qiyməti yazın!');
+  
+  items.unshift({
+    id: Date.now().toString(),
+    title: title,
+    cat: document.getElementById('f-cat').value,
+    price: price,
+    city: document.getElementById('f-city').value,
+    desc: document.getElementById('f-desc').value,
+    name: user.name,
+    phone: user.phone || 'Qeyd edilməyib',
+    uid: user.id,
+    vip: false
+  });
+  
+  user.bonus = (user.bonus || 0) + 5;
+  saveState();
+  showToast('Elan ekləndi! +5 Bonus');
+  goPage('my');
+}
+
+function submitAuth() {
+  const name = document.getElementById('a-name').value.trim();
+  const phone = document.getElementById('a-phone').value.trim();
+  if(!name) return showToast('Adınızı daxil edin!');
+  
+  user = { id: 'u_' + Date.now(), name: name, phone: phone, bonus: 10 };
+  saveState();
+  showToast('Xoş gəldiniz!');
+  goPage('my');
+}
+
+function logout() {
+  user = null;
+  localStorage.removeItem('eb_user');
+  showToast('Çıxış edildi.');
+  goPage('home');
+}
+
+function makeVip(id) {
+  if((user.bonus||0) < 10) return showToast('Kifayət qədər bonus yoxdur (10 B lazımdır)');
+  const item = items.find(i => i.id === id);
+  if(item) {
+    item.vip = true;
+    user.bonus -= 10;
+    saveState();
+    showToast('Elan VIP oldu!');
+    render();
+  }
+}
+
+function delItem(id) {
+  items = items.filter(i => i.id !== id);
+  saveState();
+  showToast('Elan silindi.');
+  render();
+}
+
+window.onload = render;
+</script>
+</body>
+</html>
