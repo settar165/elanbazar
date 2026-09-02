@@ -47,13 +47,11 @@
   .inp:focus { border-color: var(--accent); background: #fff; }
   label { font-size: 12px; font-weight: 600; color: #4a5568; display: block; margin-bottom: 4px; }
   
-  /* Qalereya və şəkil yükləmə */
   .img-preview-grid { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; }
   .img-preview-item { width: 70px; height: 70px; border-radius: 6px; border: 1px solid var(--border); object-fit: cover; flex-shrink: 0; }
   .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
   .gallery-img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
 
-  /* Auth Tabs */
   .auth-tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
   .auth-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; color: var(--muted); }
   .auth-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px; }
@@ -100,6 +98,7 @@ const CATS = [
 ];
 
 let items = JSON.parse(localStorage.getItem('eb_items')) || [];
+let usersDB = JSON.parse(localStorage.getItem('eb_users')) || [];
 let user = JSON.parse(localStorage.getItem('eb_user')) || null;
 let page = 'home';
 let pageData = null;
@@ -108,6 +107,7 @@ let uploadedImages = [];
 
 function saveState() {
   localStorage.setItem('eb_items', JSON.stringify(items));
+  localStorage.setItem('eb_users', JSON.stringify(usersDB));
   localStorage.setItem('eb_user', JSON.stringify(user));
 }
 
@@ -272,7 +272,7 @@ function render() {
         </div>
         ${authMode === 'login' ? `
           <label>E-poçt və ya Telefon</label>
-          <input type="text" id="l-contact" class="inp" placeholder="Məs: 0501234567 və ya mail@example.com">
+          <input type="text" id="l-contact" class="inp" placeholder="0501234567">
           <label>Şifrə</label>
           <input type="password" id="l-pass" class="inp" placeholder="••••••••">
           <button class="btn" onclick="submitLogin()">Daxil ol</button>
@@ -280,9 +280,9 @@ function render() {
           <label>Ad və Soyad</label>
           <input type="text" id="r-name" class="inp" placeholder="Məs: Əli Məmmədov">
           <label>E-poçt və ya Telefon</label>
-          <input type="text" id="r-contact" class="inp" placeholder="0501234567 və ya mail@example.com">
+          <input type="text" id="r-contact" class="inp" placeholder="0501234567">
           <label>Şifrə</label>
-          <input type="password" id="r-pass" class="inp" placeholder="Müştəri şifrəsi">
+          <input type="password" id="r-pass" class="inp" placeholder="Şifrəniz">
           <button class="btn" onclick="submitRegister()">Qeydiyyatdan keç (+10 Bonus)</button>
         `}
       </div>`;
@@ -334,19 +334,12 @@ function submitAdd() {
   });
   
   user.bonus = (user.bonus || 0) + 5;
+  // İstifadəçilər bazasında da bonusu yeniləyirik
+  const uIndex = usersDB.findIndex(u => u.id === user.id);
+  if(uIndex !== -1) usersDB[uIndex].bonus = user.bonus;
+  
   saveState();
   showToast('Elan ekləndi! +5 Bonus');
-  goPage('my');
-}
-
-function submitLogin() {
-  const contact = document.getElementById('l-contact').value.trim();
-  const pass = document.getElementById('l-pass').value.trim();
-  if(!contact || !pass) return showToast('Xanaları doldurun!');
-  
-  user = { id: 'u_' + Date.now(), name: contact.split('@')[0], contact: contact, bonus: 10 };
-  saveState();
-  showToast('Xoş gəldiniz!');
   goPage('my');
 }
 
@@ -354,11 +347,44 @@ function submitRegister() {
   const name = document.getElementById('r-name').value.trim();
   const contact = document.getElementById('r-contact').value.trim();
   const pass = document.getElementById('r-pass').value.trim();
+  
   if(!name || !contact || !pass) return showToast('Bütün xanaları doldurun!');
   
-  user = { id: 'u_' + Date.now(), name: name, contact: contact, bonus: 10 };
+  // Əgər həmin nömrə/poçt artıq varsa qeydiyyata icazə vermə
+  const exists = usersDB.find(u => u.contact === contact);
+  if(exists) return showToast('Bu əlaqə vasitəsi ilə artıq qeydiyyat var!');
+  
+  const newUser = {
+    id: 'u_' + Date.now(),
+    name: name,
+    contact: contact,
+    pass: pass,
+    bonus: 10
+  };
+  
+  usersDB.push(newUser);
+  user = newUser;
   saveState();
   showToast('Qeydiyyat tamamlandı! +10 Bonus verilmişdir.');
+  goPage('my');
+}
+
+function submitLogin() {
+  const contact = document.getElementById('l-contact').value.trim();
+  const pass = document.getElementById('l-pass').value.trim();
+  
+  if(!contact || !pass) return showToast('Xanaları doldurun!');
+  
+  // İstifadəçinin bazada olub-olmadığını və şifrəsinin düzgünlüyünü yoxlayırıq
+  const foundUser = usersDB.find(u => u.contact === contact && u.pass === pass);
+  
+  if(!foundUser) {
+    return showToast('Məlumatlar yanlışdır və ya istifadəçi yoxdur!');
+  }
+  
+  user = foundUser;
+  saveState();
+  showToast('Xoş gəldiniz!');
   goPage('my');
 }
 
@@ -375,6 +401,10 @@ function makeVip(id) {
   if(item) {
     item.vip = true;
     user.bonus -= 10;
+    
+    const uIndex = usersDB.findIndex(u => u.id === user.id);
+    if(uIndex !== -1) usersDB[uIndex].bonus = user.bonus;
+    
     saveState();
     showToast('Elan VIP oldu!');
     render();
