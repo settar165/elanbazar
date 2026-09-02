@@ -18,23 +18,20 @@
   button{font-family:inherit;cursor:pointer;}
   input,select,textarea{font-family:inherit;}
 
-  /* header */
   header{position:sticky;top:0;z-index:50;background:var(--accent);color:#fff;padding:10px 14px;}
   .header-row{display:flex;align-items:center;gap:10px;}
   .logo{font-weight:700;font-size:19px;letter-spacing:-0.5px;white-space:nowrap;}
   .search-box{flex:1;display:flex;background:#fff;border-radius:8px;overflow:hidden;}
-  .search-box input{flex:1;border:none;padding:9px 10px;font-size:14px;outline:none;}
+  .search-box input{flex:1;border:none;padding:9px 10px;font-size:14px;outline:none;color:var(--text);}
   .search-box button{border:none;background:#fff;padding:0 10px;color:var(--accent);font-size:16px;}
   .auth-nav-btn{background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;white-space:nowrap;}
 
   main{max-width:480px;margin:0 auto;padding:12px;padding-bottom:70px;}
 
-  /* breadcrumb */
   .crumb{font-size:13px;color:var(--text2);margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
   .crumb span.sep{color:var(--muted);}
   .crumb a{color:var(--accent-dark);}
 
-  /* category grid */
   .cat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
   .cat-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;}
   .cat-card .icon{width:40px;height:40px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent-dark);}
@@ -43,19 +40,12 @@
 
   h1.section-title{font-size:16px;font-weight:600;margin:18px 0 10px;}
 
-  /* subcategory list */
   .subcat-list{display:flex;flex-direction:column;background:var(--card);border-radius:12px;border:0.5px solid var(--border);overflow:hidden;}
   .subcat-row{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-bottom:0.5px solid var(--border);font-size:14.5px;cursor:pointer;}
   .subcat-row:last-child{border-bottom:none;}
   .subcat-row .cnt{color:var(--muted);font-size:12.5px;}
   .subcat-row .chev{color:var(--muted);}
 
-  /* filter bar */
-  .filter-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;}
-  .filter-bar select, .filter-bar input{border:0.5px solid var(--border-strong);border-radius:8px;padding:7px 8px;font-size:13px;background:#fff;color:var(--text);white-space:nowrap;}
-  .filter-bar input{width:80px;}
-
-  /* listing cards */
   .listing-list{display:flex;flex-direction:column;gap:10px;}
   .listing-card{display:flex;gap:10px;background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:10px;cursor:pointer;position:relative;}
   .listing-card.is-vip{background:var(--vip-bg);border:1.5px solid var(--vip);}
@@ -70,7 +60,6 @@
   .empty-state{text-align:center;padding:40px 16px;color:var(--muted);}
   .empty-state .big-icon{font-size:34px;margin-bottom:10px;}
 
-  /* detail page */
   .detail-img{width:100%;aspect-ratio:4/3;background:var(--accent-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--accent-dark);overflow:hidden;margin-bottom:12px;}
   .detail-img img{width:100%;height:100%;object-fit:cover;}
   .detail-price{font-size:22px;font-weight:700;color:var(--accent-dark);margin:0 0 4px;}
@@ -83,11 +72,9 @@
   .contact-row .av{width:36px;height:36px;border-radius:50%;background:var(--accent-bg);color:var(--accent-dark);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;}
   .call-btn{display:block;width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;margin-top:10px;}
 
-  /* bonus box */
   .bonus-box{background:linear-gradient(135deg, #178a5b, #0f6a45);color:#fff;border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
   .bonus-amount{font-size:20px;font-weight:700;}
 
-  /* form */
   .form-group{margin-bottom:14px;}
   .form-group label{display:block;font-size:13px;color:var(--text2);margin-bottom:5px;font-weight:500;}
   .form-group input, .form-group select, .form-group textarea{width:100%;border:0.5px solid var(--border-strong);border-radius:8px;padding:10px;font-size:14.5px;background:#fff;color:var(--text);}
@@ -97,14 +84,12 @@
   .submit-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:600;margin-top:6px;}
   .logout-btn{width:100%;background:var(--danger);color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;margin-top:14px;}
   .vip-btn{background:var(--vip);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;margin-top:6px;}
-  .err{color:var(--danger);font-size:12.5px;margin-top:4px;}
+  .del-btn{background:var(--danger);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;}
 
-  /* tabs for auth */
   .auth-tabs{display:flex;margin-bottom:16px;border-bottom:1px solid var(--border);}
   .auth-tab{flex:1;text-align:center;padding:10px;font-weight:600;cursor:pointer;color:var(--text2);}
   .auth-tab.active{color:var(--accent-dark);border-bottom:2px solid var(--accent-dark);}
 
-  /* bottom nav */
   .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:0.5px solid var(--border);display:flex;z-index:50;}
   .bottom-nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;font-size:11px;color:var(--muted);cursor:pointer;}
   .bottom-nav a.active{color:var(--accent-dark);}
@@ -112,9 +97,7 @@
 
   .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.show{opacity:1;}
-
   .action-btns{display:flex;gap:6px;margin-top:6px;}
-  .del-btn{background:var(--danger);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;}
 </style>
 </head>
 <body>
@@ -144,15 +127,17 @@ const CATEGORIES = [
 
 const CITIES = ['Bakı','Gəncə','Sumqayıt','Mingəçevir','Şəki','Xankəndi','Naxçıvan','Lənkəran','Şirvan'];
 
-// Nümunə test elanları
-let LISTINGS = [
-  {id:'1', title:'iPhone 13 Pro 128GB Blue', category:'telefon', subcategory:'Smartfonlar', price:1350, city:'Bakı', createdAt: Date.now() - 3600000, isVip: true, sellerName:'Əli M.', phone:'+994501234567', description:'Əla vəziyyətdədir, heç bir problemi yoxdur.'},
-  {id:'2', title:'BMW 525i E39 2.5L 2002', category:'neqliyyat', subcategory:'Minik avtomobilləri', price:12800, city:'Gəncə', createdAt: Date.now() - 86400000, isVip: false, sellerName:'Rəşad', phone:'+994559876543', description:'Təcili satılır, real alıcıya endirim olacaq.'}
+let LISTINGS = JSON.parse(localStorage.getItem('eb_listings')) || [
+  {id:'1', title:'iPhone 13 Pro 128GB Blue', category:'telefon', subcategory:'Smartfonlar', price:1350, city:'Bakı', createdAt: Date.now() - 3600000, isVip: true, sellerName:'Əli M.', phone:'+994501234567', description:'Əla vəziyyətdədir, heç bir problemi yoxdur.', userId:'u0'},
+  {id:'2', title:'BMW 525i E39 2.5L 2002', category:'neqliyyat', subcategory:'Minik avtomobilləri', price:12800, city:'Gəncə', createdAt: Date.now() - 86400000, isVip: false, sellerName:'Rəşad', phone:'+994559876543', description:'Təcili satılır, real alıcıya endirim olacaq.', userId:'u0'}
 ];
 
-let USERS = [];
-let CURRENT_USER = {id:'u1', name:'Məmməd', bonus:15};
+// Qeydiyyat/giriş edilməyibsə istifadəçi boş olacaq
+let CURRENT_USER = JSON.parse(localStorage.getItem('eb_user')) || null;
 let ROUTE = {page:'home'};
+
+function saveListings(){ localStorage.setItem('eb_listings', JSON.stringify(LISTINGS)); }
+function saveUser(){ localStorage.setItem('eb_user', JSON.stringify(CURRENT_USER)); }
 
 function esc(s){ const d=document.createElement('div'); d.innerText = s==null?'':String(s); return d.innerHTML; }
 function fmtPrice(n, cat){
@@ -173,7 +158,6 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 1800);
 }
 function nav(route){ ROUTE = route; window.scrollTo(0,0); render(); }
-
 function catById(id){ return CATEGORIES.find(c=>c.id===id); }
 
 function sortListings(list){
@@ -252,6 +236,26 @@ function pageCategory(){
   return html;
 }
 
+function pageListings(){
+  let items = LISTINGS;
+  if(ROUTE.cat) items = items.filter(l=>l.category===ROUTE.cat);
+  if(ROUTE.sub) items = items.filter(l=>l.subcategory===ROUTE.sub);
+  const cat = catById(ROUTE.cat);
+  let html = `<div class="crumb"><a href="#" onclick="nav({page:'home'});return false;">Ana səhifə</a><span class="sep">›</span><a href="#" onclick="nav({page:'category',cat:'${ROUTE.cat}'});return false;">${esc(cat?cat.name:'')}</a><span class="sep">›</span><span>${esc(ROUTE.sub)}</span></div>`;
+  html += `<h1 class="section-title">${esc(ROUTE.sub)}</h1>`;
+  html += renderListingList(sortListings(items));
+  return html;
+}
+
+function pageSearch(){
+  const q = (ROUTE.query||'').toLowerCase();
+  const filtered = LISTINGS.filter(l => l.title.toLowerCase().includes(q) || (l.description&&l.description.toLowerCase().includes(q)));
+  let html = `<div class="crumb"><a href="#" onclick="nav({page:'home'});return false;">Ana səhifə</a><span class="sep">›</span><span>Axtarış</span></div>`;
+  html += `<h1 class="section-title">Axtarış nəticələri: "${esc(ROUTE.query)}"</h1>`;
+  html += renderListingList(sortListings(filtered));
+  return html;
+}
+
 function renderListingList(items, showManageBtns = false){
   if(items.length===0){
     return `<div class="empty-state"><div class="big-icon">🔍</div>Elan tapılmadı</div>`;
@@ -266,6 +270,12 @@ function renderListingList(items, showManageBtns = false){
         <p class="listing-title">${esc(l.title)}</p>
         <p class="listing-price">${fmtPrice(l.price, l.category)}</p>
         <p class="listing-meta">${esc(l.city)} · ${timeAgo(l.createdAt)}</p>
+        ${showManageBtns ? `
+          <div class="action-btns" onclick="event.stopPropagation()">
+            ${!l.isVip ? `<button class="vip-btn" onclick="makeVip('${l.id}')">VIP et (${VIP_COST} bonus)</button>` : ''}
+            <button class="del-btn" onclick="deleteListing('${l.id}')">Sil</button>
+          </div>
+        ` : ''}
       </div>
     </div>`;
   });
@@ -294,17 +304,57 @@ function pageDetail(){
   return html;
 }
 
-function render(){
-  renderHeader();
-  renderBottomNav();
-  const main = document.getElementById('main');
-  if(ROUTE.page === 'home') main.innerHTML = pageHome();
-  else if(ROUTE.page === 'category') main.innerHTML = pageCategory();
-  else if(ROUTE.page === 'detail') main.innerHTML = pageDetail();
-  else main.innerHTML = pageHome();
-}
+function pageAdd(){
+  if(!CURRENT_USER) {
+    return `<div class="empty-state">
+      <div class="big-icon">🔒</div>
+      <p>Elan yerləşdirib bonus qazanmaq üçün hesabınıza daxil olun.</p>
+      <button class="submit-btn" style="width:auto;padding:10px 20px;" onclick="nav({page:'auth', tab:'login'})">Giriş et / Qeydiyyat</button>
+    </div>`;
+  }
 
-window.onload = () => { render(); };
-</script>
-</body>
-</html>
+  let catOpts = CATEGORIES.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  let cityOpts = CITIES.map(c=>`<option value="${c}">${esc(c)}</option>`).join('');
+
+  return `
+    <h1 class="section-title">Yeni elan yerləşdir</h1>
+    <div class="detail-card">
+      <form onsubmit="handleAddListing(event)">
+        <div class="form-group">
+          <label>Başlıq *</label>
+          <input type="text" id="add-title" required placeholder="Məsələn: iPhone 13 Pro">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kateqoriya *</label>
+            <select id="add-cat" onchange="updateSubcatSelect()" required>
+              <option value="">Seçin</option>
+              ${catOpts}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Alt kateqoriya</label>
+            <select id="add-sub"><option value="">Əvvəlcə kateqoriya seçin</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Qiymət (AZN) *</label>
+            <input type="number" id="add-price" required placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Şəhər *</label>
+            <select id="add-city">${cityOpts}</select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Şəkil URL (İstəyə bağlı)</label>
+          <input type="url" id="add-image" placeholder="https://site.com/image.jpg">
+        </div>
+        <div class="form-group">
+          <label>Ətraflı məlumat</label>
+          <textarea id="add-desc" placeholder="Elan haqqında geniş məlumat yazın..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Telefon *</label>
+          <input type="tel" id="add-phone" required placeholder="+994 50 000 00 00" value
