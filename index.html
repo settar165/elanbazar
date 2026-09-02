@@ -11,14 +11,14 @@
     --vip: #ffb703; --vip-bg: #fff9e6; --danger: #d33a2c;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
   header { position: sticky; top: 0; z-index: 50; background: var(--accent); padding: 10px; color: #fff; }
   .h-row { display: flex; gap: 8px; align-items: center; }
-  .logo { font-weight: bold; font-size: 18px; cursor: pointer; color: #fff; text-decoration: none; }
+  .logo { font-weight: bold; font-size: 18px; cursor: pointer; color: #fff; text-decoration: none; white-space: nowrap; }
   .s-box { flex: 1; display: flex; background: #fff; border-radius: 6px; overflow: hidden; }
   .s-box input { flex: 1; border: none; padding: 8px; font-size: 14px; outline: none; }
   .s-box button { border: none; background: #fff; padding: 0 8px; cursor: pointer; }
-  .user-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; }
+  .user-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
   
   main { max-width: 480px; margin: 0 auto; padding: 12px; padding-bottom: 70px; }
   
@@ -39,8 +39,8 @@
   .item-meta { font-size: 11px; color: var(--muted); }
   
   .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-  .btn-del { background: var(--danger); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; }
-  .btn-vip { background: var(--vip); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color: #fff; }
+  .btn-del { background: var(--danger); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color:#fff; border:none; border-radius:4px; }
+  .btn-vip { background: var(--vip); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color: #fff; border:none; border-radius:4px; }
   
   .inp { width: 100%; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
   label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
@@ -77,15 +77,18 @@
 
 <script>
 const CATS = [
-  {id:'tel', name:'Telefonlar', icon:'📱'},
-  {id:'auto', name:'Nəqliyyat', icon:'🚗'},
+  {id:'elektronika', name:'Elektronika', icon:'💻'},
+  {id:'neqliyyat', name:'Nəqliyyat', icon:'🚗'},
+  {id:'ehtiyat', name:'Ehtiyat hissələri', icon:'🔧'},
   {id:'emlak', name:'Daşınmaz Əmlak', icon:'🏠'},
-  {id:'elek', name:'Elektronika', icon:'💻'}
+  {id:'meiset', name:'Məişət texnikası', icon:'🍳'},
+  {id:'telefon', name:'Telefonlar', icon:'📱'},
+  {id:'is', name:'İş elanları', icon:'💼'}
 ];
 
 let items = JSON.parse(localStorage.getItem('eb_items')) || [
-  {id:'1', title:'iPhone 13 Pro 128GB', cat:'tel', price:1350, city:'Bakı', name:'Əli', phone:'0501234567', desc:'Təmiz telefondur.', vip:true, uid:'0'},
-  {id:'2', title:'BMW 525i 2002', cat:'auto', price:12000, city:'Gəncə', name:'Vusal', phone:'0559876543', desc:'Əla vəziyyətdə.', vip:false, uid:'0'}
+  {id:'1', title:'iPhone 13 Pro 128GB', cat:'telefon', price:1350, city:'Bakı', name:'Əli', phone:'0501234567', desc:'Təmiz telefondur.', vip:true, uid:'0'},
+  {id:'2', title:'BMW 525i 2002', cat:'neqliyyat', price:12000, city:'Gəncə', name:'Vusal', phone:'0559876543', desc:'Əla vəziyyətdə.', vip:false, uid:'0'}
 ];
 
 let user = JSON.parse(localStorage.getItem('eb_user')) || null;
@@ -149,8 +152,9 @@ function render() {
     app.innerHTML = html;
   }
   else if(page === 'cat') {
+    const catObj = CATS.find(c=>c.id===pageData);
     const list = items.filter(i => i.cat === pageData);
-    app.innerHTML = `<div class="sec-title">Kateqoriya elanları</div>` + renderList(list);
+    app.innerHTML = `<div class="sec-title">${catObj ? catObj.name : 'Kateqoriya'} elanları</div>` + renderList(list);
   }
   else if(page === 'search') {
     const list = items.filter(i => i.title.toLowerCase().includes(pageData.toLowerCase()));
