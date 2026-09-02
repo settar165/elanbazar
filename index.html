@@ -23,7 +23,6 @@
   
   main { max-width: 480px; margin: 0 auto; padding: 12px; padding-bottom: 70px; }
   
-  /* Filter Box */
   .filter-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 12px; }
   .filter-row { display: flex; gap: 8px; margin-top: 6px; }
   .filter-row input { flex: 1; margin: 0; }
@@ -56,18 +55,15 @@
   .inp:focus { border-color: var(--accent); background: #fff; }
   label { font-size: 12px; font-weight: 600; color: #4a5568; display: block; margin-bottom: 4px; }
   
-  /* Qalereya və şəkil yükləmə */
   .img-preview-grid { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; }
   .img-preview-item { width: 70px; height: 70px; border-radius: 6px; border: 1px solid var(--border); object-fit: cover; flex-shrink: 0; }
   .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
   .gallery-img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
 
-  /* Şərhlər */
   .comment-box { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px; }
   .comment-item { background: #fafafa; padding: 8px; border-radius: 6px; font-size: 12px; margin-bottom: 6px; }
   .comment-author { font-weight: bold; margin-bottom: 2px; color: var(--accent); }
 
-  /* Auth Tabs */
   .auth-tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
   .auth-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; color: var(--muted); }
   .auth-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px; }
@@ -170,9 +166,9 @@ function filterByPrice() {
 function renderHeader() {
   const box = document.getElementById('u-header');
   if(user) {
-    box.innerHTML = `<button class="user-btn" onclick="goPage('my')">${user.name} (${user.bonus||0} B)</button>`;
+    box.innerHTML = '<button class="user-btn" onclick="goPage(\'my\')">' + user.name + ' (' + (user.bonus||0) + ' B)</button>';
   } else {
-    box.innerHTML = `<button class="user-btn" onclick="goPage('auth')">Giriş</button>`;
+    box.innerHTML = '<button class="user-btn" onclick="goPage(\'auth\')">Giriş</button>';
   }
 }
 
@@ -204,7 +200,7 @@ function handleImageUpload(event) {
 function renderImagePreviews() {
   const container = document.getElementById('img-previews');
   if(!container) return;
-  container.innerHTML = uploadedImages.map(src => `<img src="${src}" class="img-preview-item">`).join('');
+  container.innerHTML = uploadedImages.map(src => '<img src="' + src + '" class="img-preview-item">').join('');
 }
 
 function addComment(itemId) {
@@ -229,23 +225,27 @@ function render() {
   const app = document.getElementById('app');
 
   if(page === 'home' || page === 'filter') {
-    let html = `
-      <div class="filter-card">
-        <label>💰 Qiymət aralığı (AZN)</label>
-        <div class="filter-row">
-          <input type="number" id="p-min" class="inp" placeholder="Min" value="${pageData?.min || ''}">
-          <input type="number" id="p-max" class="inp" placeholder="Maks" value="${pageData?.max !== Infinity && pageData?.max ? pageData.max : ''}">
-          <button class="btn" style="width:auto;margin:0;padding:0 12px;" onclick="filterByPrice()">Süz</button>
-        </div>
-      </div>
-      <div class="cat-grid">`;
+    let minVal = pageData && pageData.min ? pageData.min : '';
+    let maxVal = pageData && pageData.max && pageData.max !== Infinity ? pageData.max : '';
+    
+    let html = '<div class="filter-card">' +
+      '<label>💰 Qiymət aralığı (AZN)</label>' +
+      '<div class="filter-row">' +
+        '<input type="number" id="p-min" class="inp" placeholder="Min" value="' + minVal + '">' +
+        '<input type="number" id="p-max" class="inp" placeholder="Maks" value="' + maxVal + '">' +
+        '<button class="btn" style="width:auto;margin:0;padding:0 12px;" onclick="filterByPrice()">Süz</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="cat-grid">';
+    
     CATS.forEach(c => {
-      html += `<div class="cat-card" onclick="goPage('cat', '${c.id}')">
-        <div class="cat-icon">${c.icon}</div>
-        <div class="cat-title">${c.name}</div>
-      </div>`;
+      html += '<div class="cat-card" onclick="goPage(\'cat\', \'' + c.id + '\')">' +
+        '<div class="cat-icon">' + c.icon + '</div>' +
+        '<div class="cat-title">' + c.name + '</div>' +
+      '</div>';
     });
-    html += `</div><div class="sec-title">${page === 'filter' ? 'Filtrlənmiş Elanlar' : 'Son Elanlar'}</div>`;
+    
+    html += '</div><div class="sec-title">' + (page === 'filter' ? 'Filtrlənmiş Elanlar' : 'Son Elanlar') + '</div>';
     
     let displayItems = items;
     if(page === 'filter') {
@@ -260,15 +260,15 @@ function render() {
   else if(page === 'cat') {
     const catObj = CATS.find(c=>c.id===pageData);
     const list = items.filter(i => i.cat === pageData);
-    app.innerHTML = `<div class="sec-title">${catObj ? catObj.name : 'Kateqoriya'} elanları</div>` + renderList(list);
+    app.innerHTML = '<div class="sec-title">' + (catObj ? catObj.name : 'Kateqoriya') + ' elanları</div>' + renderList(list);
   }
   else if(page === 'search') {
     const list = items.filter(i => i.title.toLowerCase().includes(pageData.toLowerCase()));
-    app.innerHTML = `<div class="sec-title">Axtarış: "${pageData}"</div>` + renderList(list);
+    app.innerHTML = '<div class="sec-title">Axtarış: "' + pageData + '"</div>' + renderList(list);
   }
   else if(page === 'fav') {
     const list = items.filter(i => favorites.includes(i.id));
-    app.innerHTML = `<div class="sec-title">Seçilmiş Elanlar (${list.length})</div>` + renderList(list);
+    app.innerHTML = '<div class="sec-title">Seçilmiş Elanlar (' + list.length + ')</div>' + renderList(list);
   }
   else if(page === 'detail') {
     const item = items.find(i => i.id === pageData);
@@ -276,137 +276,135 @@ function render() {
     
     let imagesHtml = '';
     if(item.images && item.images.length > 0) {
-      imagesHtml = `<div class="gallery-grid">` + item.images.map(img => `<img src="${img}" class="gallery-img">`).join('') + `</div>`;
+      imagesHtml = '<div class="gallery-grid">' + item.images.map(img => '<img src="' + img + '" class="gallery-img">').join('') + '</div>';
     } else {
-      imagesHtml = `<div style="font-size:40px;text-align:center;padding:20px;background:#f0f2f5;border-radius:6px;margin-bottom:12px;">📦</div>`;
+      imagesHtml = '<div style="font-size:40px;text-align:center;padding:20px;background:#f0f2f5;border-radius:6px;margin-bottom:12px;">📦</div>';
     }
 
-    const cleanPhone = item.phone.replace(/[^0-9]/g, '');
-    const waText = encodeURIComponent(`Salam, "${item.title}" elanı ilə bağlı yazıram.`);
-    const waUrl = `https://wa.me/${cleanPhone}?text=${waText}`;
+    const cleanPhone = item.phone ? item.phone.replace(/[^0-9]/g, '') : '';
+    const waText = encodeURIComponent('Salam, "' + item.title + '" elanı ilə bağlı yazıram.');
+    const waUrl = 'https://wa.me/' + cleanPhone + '?text=' + waText;
 
-    app.innerHTML = `
-      <div class="card">
-        ${imagesHtml}
-        <h2>${item.title}</h2>
-        <h3 style="color:var(--accent);">${item.price} AZN</h3>
-        <p><b>Şəhər:</b> ${item.city}</p>
-        <p><b>Məlumat:</b> ${item.desc || 'Yoxdur'}</p>
-        <hr style="border:none;border-top:1px solid var(--border);">
-        <p><b>Satan:</b> ${item.name}</p>
-        <button class="btn" onclick="showToast('Əlaqə: ${item.phone}')">📞 Nömrəni göstər</button>
-        ${cleanPhone ? `<a href="${waUrl}" target="_blank" style="text-decoration:none;"><button class="btn btn-wa">💬 WhatsApp ilə yaz</button></a>` : ''}
+    let commentsListHtml = (item.comments || []).map(c => 
+      '<div class="comment-item">' +
+        '<div class="comment-author">' + c.author + ' <span style="font-weight:normal;color:var(--muted);">• ' + c.date + '</span></div>' +
+        '<div>' + c.text + '</div>' +
+      '</div>'
+    ).join('');
+
+    app.innerHTML = 
+      '<div class="card">' +
+        imagesHtml +
+        '<h2>' + item.title + '</h2>' +
+        '<h3 style="color:var(--accent);">' + item.price + ' AZN</h3>' +
+        '<p><b>Şəhər:</b> ' + item.city + '</p>' +
+        '<p><b>Məlumat:</b> ' + (item.desc || 'Yoxdur') + '</p>' +
+        '<hr style="border:none;border-top:1px solid var(--border);">' +
+        '<p><b>Satan:</b> ' + item.name + '</p>' +
+        '<button class="btn" onclick="showToast(\'Əlaqə: ' + item.phone + '\')">📞 Nömrəni göstər</button>' +
+        (cleanPhone ? '<a href="' + waUrl + '" target="_blank" style="text-decoration:none;"><button class="btn btn-wa">💬 WhatsApp ilə yaz</button></a>' : '') +
         
-        <!-- Şərhlər -->
-        <div class="comment-box">
-          <div class="sec-title">Şərhlər (${(item.comments || []).length})</div>
-          <div>
-            ${(item.comments || []).map(c => `
-              <div class="comment-item">
-                <div class="comment-author">${c.author} <span style="font-weight:normal;color:var(--muted);">• ${c.date}</span></div>
-                <div>${c.text}</div>
-              </div>
-            `).join('')}
-          </div>
-          <input type="text" id="c-input" class="inp" placeholder="Rəy yazın..." style="margin-top:8px;">
-          <button class="btn" style="padding:8px;" onclick="addComment('${item.id}')">Göndər</button>
-        </div>
-      </div>`;
+        '<div class="comment-box">' +
+          '<div class="sec-title">Şərhlər (' + (item.comments || []).length + ')</div>' +
+          '<div>' + commentsListHtml + '</div>' +
+          '<input type="text" id="c-input" class="inp" placeholder="Rəy yazın..." style="margin-top:8px;">' +
+          '<button class="btn" style="padding:8px;" onclick="addComment(\'' + item.id + '\')">Göndər</button>' +
+        '</div>' +
+      '</div>';
   }
   else if(page === 'add') {
     if(!user) {
-      app.innerHTML = `<div class="card" style="text-align:center;">
-        <p>Elan vermək üçün hesabınıza daxil olun.</p>
-        <button class="btn" onclick="goPage('auth')">Daxil ol / Qeydiyyat</button>
-      </div>`;
+      app.innerHTML = '<div class="card" style="text-align:center;">' +
+        '<p>Elan vermək üçün hesabınıza daxil olun.</p>' +
+        '<button class="btn" onclick="goPage(\'auth\')">Daxil ol / Qeydiyyat</button>' +
+      '</div>';
       return;
     }
-    app.innerHTML = `
-      <div class="card">
-        <div class="sec-title">Yeni Elan</div>
-        <label>Başlıq</label>
-        <input type="text" id="f-title" class="inp" placeholder="Məs: iPhone 12 Pro">
-        <label>Kateqoriya</label>
-        <select id="f-cat" class="inp">
-          ${CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
-        </select>
-        <label>Qiymət (AZN)</label>
-        <input type="number" id="f-price" class="inp" placeholder="100">
-        <label>Şəhər</label>
-        <input type="text" id="f-city" class="inp" value="Bakı">
-        <label>Əlaqə Nömrəsi (WhatsApp üçün ölkə kodu ilə: +994...)</label>
-        <input type="text" id="f-phone" class="inp" placeholder="+994501234567" value="${user.contact || ''}">
-        <label>Şəkillər əlavə et (birdən çox seçə bilərsiniz)</label>
-        <input type="file" id="f-imgs" class="inp" accept="image/*" multiple onchange="handleImageUpload(event)">
-        <div id="img-previews" class="img-preview-grid"></div>
-        <label>Ətraflı</label>
-        <textarea id="f-desc" class="inp" placeholder="Məlumat..."></textarea>
-        <button class="btn" onclick="submitAdd()">Dərc et (+5 bonus)</button>
-      </div>`;
+    app.innerHTML = 
+      '<div class="card">' +
+        '<div class="sec-title">Yeni Elan</div>' +
+        '<label>Başlıq</label>' +
+        '<input type="text" id="f-title" class="inp" placeholder="Məs: iPhone 12 Pro">' +
+        '<label>Kateqoriya</label>' +
+        '<select id="f-cat" class="inp">' +
+          CATS.map(c=>'<option value="' + c.id + '">' + c.name + '</option>').join('') +
+        '</select>' +
+        '<label>Qiymət (AZN)</label>' +
+        '<input type="number" id="f-price" class="inp" placeholder="100">' +
+        '<label>Şəhər</label>' +
+        '<input type="text" id="f-city" class="inp" value="Bakı">' +
+        '<label>Əlaqə Nömrəsi (WhatsApp üçün ölkə kodu ilə: +994...)</label>' +
+        '<input type="text" id="f-phone" class="inp" placeholder="+994501234567" value="' + (user.contact || '') + '">' +
+        '<label>Şəkillər əlavə et (birdən çox seçə bilərsiniz)</label>' +
+        '<input type="file" id="f-imgs" class="inp" accept="image/*" multiple onchange="handleImageUpload(event)">' +
+        '<div id="img-previews" class="img-preview-grid"></div>' +
+        '<label>Ətraflı</label>' +
+        '<textarea id="f-desc" class="inp" placeholder="Məlumat..."></textarea>' +
+        '<button class="btn" onclick="submitAdd()">Dərc et (+5 bonus)</button>' +
+      '</div>';
   }
   else if(page === 'my') {
     if(!user) return goPage('auth');
     const myItems = items.filter(i => i.uid === user.id);
-    app.innerHTML = `
-      <div class="card">
-        <h3>${user.name}</h3>
-        <p><b>E-poçt / Telefon:</b> ${user.contact || 'Qeyd edilməyib'}</p>
-        <p><b>Balans:</b> ${user.bonus||0} Bonus</p>
-        <button class="btn" style="background:var(--danger);" onclick="logout()">Çıxış et</button>
-      </div>
-      <div class="sec-title">Elanlarım (${myItems.length})</div>
-      ${renderList(myItems, true)}
-    `;
+    app.innerHTML = 
+      '<div class="card">' +
+        '<h3>' + user.name + '</h3>' +
+        '<p><b>E-poçt / Telefon:</b> ' + (user.contact || 'Qeyd edilməyib') + '</p>' +
+        '<p><b>Balans:</b> ' + (user.bonus||0) + ' Bonus</p>' +
+        '<button class="btn" style="background:var(--danger);" onclick="logout()">Çıxış et</button>' +
+      '</div>' +
+      '<div class="sec-title">Elanlarım (' + myItems.length + ')</div>' +
+      renderList(myItems, true);
   }
   else if(page === 'auth') {
-    app.innerHTML = `
-      <div class="card">
-        <div class="auth-tabs">
-          <div class="auth-tab ${authMode==='login'?'active':''}" onclick="switchAuthTab('login')">Daxil ol</div>
-          <div class="auth-tab ${authMode==='register'?'active':''}" onclick="switchAuthTab('register')">Qeydiyyat</div>
-        </div>
-        ${authMode === 'login' ? `
-          <label>E-poçt və ya Telefon</label>
-          <input type="text" id="l-contact" class="inp" placeholder="Məs: +994501234567">
-          <label>Şifrə</label>
-          <input type="password" id="l-pass" class="inp" placeholder="••••••••">
-          <button class="btn" onclick="submitLogin()">Daxil ol</button>
-        ` : `
-          <label>Ad və Soyad</label>
-          <input type="text" id="r-name" class="inp" placeholder="Məs: Əli Məmmədov">
-          <label>E-poçt və ya Telefon</label>
-          <input type="text" id="r-contact" class="inp" placeholder="+994501234567">
-          <label>Şifrə</label>
-          <input type="password" id="r-pass" class="inp" placeholder="Müştəri şifrəsi">
-          <button class="btn" onclick="submitRegister()">Qeydiyyatdan keç (+10 Bonus)</button>
-        `}
-      </div>`;
+    app.innerHTML = 
+      '<div class="card">' +
+        '<div class="auth-tabs">' +
+          '<div class="auth-tab ' + (authMode==='login'?'active':'') + '" onclick="switchAuthTab(\'login\')">Daxil ol</div>' +
+          '<div class="auth-tab ' + (authMode==='register'?'active':'') + '" onclick="switchAuthTab(\'register\')">Qeydiyyat</div>' +
+        '</div>' +
+        (authMode === 'login' ? 
+          '<label>E-poçt və ya Telefon</label>' +
+          '<input type="text" id="l-contact" class="inp" placeholder="Məs: +994501234567">' +
+          '<label>Şifrə</label>' +
+          '<input type="password" id="l-pass" class="inp" placeholder="••••••••">' +
+          '<button class="btn" onclick="submitLogin()">Daxil ol</button>'
+         : 
+          '<label>Ad və Soyad</label>' +
+          '<input type="text" id="r-name" class="inp" placeholder="Məs: Əli Məmmədov">' +
+          '<label>E-poçt və ya Telefon</label>' +
+          '<input type="text" id="r-contact" class="inp" placeholder="+994501234567">' +
+          '<label>Şifrə</label>' +
+          '<input type="password" id="r-pass" class="inp" placeholder="Müştəri şifrəsi">' +
+          '<button class="btn" onclick="submitRegister()">Qeydiyyatdan keç (+10 Bonus)</button>'
+        ) +
+      '</div>';
   }
 }
 
 function renderList(list, isMy = false) {
-  if(!list.length) return `<div class="card" style="text-align:center;color:var(--muted);padding:30px 10px;">Hələ ki heç bir elan yoxdur.</div>`;
+  if(!list.length) return '<div class="card" style="text-align:center;color:var(--muted);padding:30px 10px;">Hələ ki heç bir elan yoxdur.</div>';
   let html = '';
   list.forEach(i => {
-    const thumb = (i.images && i.images.length > 0) ? `<img src="${i.images[0]}">` : '📦';
+    const thumb = (i.images && i.images.length > 0) ? '<img src="' + i.images[0] + '">' : '📦';
     const isFav = favorites.includes(i.id);
-    html += `
-      <div class="card item-card ${i.vip?'is-vip':''}" onclick="goPage('detail', '${i.id}')">
-        ${i.vip ? `<div class="vip-badge">VIP</div>` : ''}
-        <div class="fav-btn" onclick="toggleFav('${i.id}', event)">${isFav ? '❤️' : '🤍'}</div>
-        <div class="item-img">${thumb}</div>
-        <div style="flex:1;">
-          <div class="item-title">${i.title}</div>
-          <div class="item-price">${i.price} AZN</div>
-          <div class="item-meta">${i.city}</div>
-          ${isMy ? `
-            <div style="margin-top:6px;display:flex;gap:6px;" onclick="event.stopPropagation()">
-              ${!i.vip ? `<button class="btn-vip" onclick="makeVip('${i.id}')">VIP et (10B)</button>` : ''}
-              <button class="btn-del" onclick="delItem('${i.id}')">Sil</button>
-            </div>
-          ` : ''}
-        </div>
-      </div>`;
+    html += 
+      '<div class="card item-card ' + (i.vip?'is-vip':'') + '" onclick="goPage(\'detail\', \'' + i.id + '\')">' +
+        (i.vip ? '<div class="vip-badge">VIP</div>' : '') +
+        '<div class="fav-btn" onclick="toggleFav(\'' + i.id + '\', event)">' + (isFav ? '❤️' : '🤍') + '</div>' +
+        '<div class="item-img">' + thumb + '</div>' +
+        '<div style="flex:1;">' +
+          '<div class="item-title">' + i.title + '</div>' +
+          '<div class="item-price">' + i.price + ' AZN</div>' +
+          '<div class="item-meta">' + i.city + '</div>' +
+          (isMy ? 
+            '<div style="margin-top:6px;display:flex;gap:6px;" onclick="event.stopPropagation()">' +
+              (!i.vip ? '<button class="btn-vip" onclick="makeVip(\'' + i.id + '\')">VIP et (10B)</button>' : '') +
+              '<button class="btn-del" onclick="delItem(\'' + i.id + '\')">Sil</button>' +
+            '</div>'
+           : '') +
+        '</div>' +
+      '</div>';
   });
   return html;
 }
@@ -440,18 +438,4 @@ function submitAdd() {
 function submitLogin() {
   const contact = document.getElementById('l-contact').value.trim();
   const pass = document.getElementById('l-pass').value.trim();
-  if(!contact || !pass) return showToast('Xanaları doldurun!');
-  
-  user = { id: 'u_' + Date.now(), name: contact.split('@')[0], contact: contact, bonus: 10 };
-  saveState();
-  showToast('Xoş gəldiniz!');
-  goPage('my');
-}
-
-function submitRegister() {
-  const name = document.getElementById('r-name').value.trim();
-  const contact = document.getElementById('r-contact').value.trim();
-  const pass = document.getElementById('r-pass').value.trim();
-  if(!name || !contact || !pass) return showToast('Bütün xanaları doldurun!');
-  
-  user = { id: 'u_' + Date.now(), name: name, contact: contact, bonus
+  if(!contact || !pass)
