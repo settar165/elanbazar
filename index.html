@@ -56,6 +56,8 @@
   .auth-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; color: var(--muted); }
   .auth-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px; }
 
+  .forgot-btn { font-size: 12px; color: var(--accent); text-align: right; cursor: pointer; margin-top: -6px; margin-bottom: 10px; font-weight: 600; display: block; }
+
   .b-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 50; }
   .b-nav a { flex: 1; text-align: center; padding: 8px 0; color: var(--muted); text-decoration: none; font-size: 11px; cursor: pointer; }
   .b-nav a.active { color: var(--accent); font-weight: bold; }
@@ -102,7 +104,7 @@ let usersDB = JSON.parse(localStorage.getItem('eb_users')) || [];
 let user = JSON.parse(localStorage.getItem('eb_user')) || null;
 let page = 'home';
 let pageData = null;
-let authMode = 'login';
+let authMode = 'login'; // login | register | forgot
 let uploadedImages = [];
 
 function saveState() {
@@ -264,6 +266,23 @@ function render() {
     `;
   }
   else if(page === 'auth') {
+    if(authMode === 'forgot') {
+      app.innerHTML = `
+        <div class="card">
+          <div class="sec-title" style="margin-top:0;">Şifrəni Yenilə</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Qeydiyyatdan keçdiyiniz E-poçt və ya Telefon nömrəsini yazaraq yeni şifrə təyin edin.</p>
+          <label>E-poçt və ya Telefon</label>
+          <input type="text" id="reset-contact" class="inp" placeholder="0501234567">
+          <label>Yeni Şifrə</label>
+          <input type="password" id="reset-pass" class="inp" placeholder="Yeni şifrəniz">
+          <button class="btn" onclick="submitResetPassword()">Şifrəni Dəyiş və Daxil Ol</button>
+          <div style="text-align:center;margin-top:12px;">
+            <a onclick="switchAuthTab('login')" style="font-size:12px;color:var(--accent);cursor:pointer;font-weight:bold;">Giriş səhifəsinə qayıt</a>
+          </div>
+        </div>`;
+      return;
+    }
+
     app.innerHTML = `
       <div class="card">
         <div class="auth-tabs">
@@ -275,6 +294,7 @@ function render() {
           <input type="text" id="l-contact" class="inp" placeholder="0501234567">
           <label>Şifrə</label>
           <input type="password" id="l-pass" class="inp" placeholder="••••••••">
+          <span class="forgot-btn" onclick="switchAuthTab('forgot')">Şifrəni unutmusunuz?</span>
           <button class="btn" onclick="submitLogin()">Daxil ol</button>
         ` : `
           <label>Ad və Soyad</label>
@@ -334,7 +354,6 @@ function submitAdd() {
   });
   
   user.bonus = (user.bonus || 0) + 5;
-  // İstifadəçilər bazasında da bonusu yeniləyirik
   const uIndex = usersDB.findIndex(u => u.id === user.id);
   if(uIndex !== -1) usersDB[uIndex].bonus = user.bonus;
   
@@ -350,7 +369,6 @@ function submitRegister() {
   
   if(!name || !contact || !pass) return showToast('Bütün xanaları doldurun!');
   
-  // Əgər həmin nömrə/poçt artıq varsa qeydiyyata icazə vermə
   const exists = usersDB.find(u => u.contact === contact);
   if(exists) return showToast('Bu əlaqə vasitəsi ilə artıq qeydiyyat var!');
   
@@ -375,7 +393,6 @@ function submitLogin() {
   
   if(!contact || !pass) return showToast('Xanaları doldurun!');
   
-  // İstifadəçinin bazada olub-olmadığını və şifrəsinin düzgünlüyünü yoxlayırıq
   const foundUser = usersDB.find(u => u.contact === contact && u.pass === pass);
   
   if(!foundUser) {
@@ -385,6 +402,25 @@ function submitLogin() {
   user = foundUser;
   saveState();
   showToast('Xoş gəldiniz!');
+  goPage('my');
+}
+
+function submitResetPassword() {
+  const contact = document.getElementById('reset-contact').value.trim();
+  const newPass = document.getElementById('reset-pass').value.trim();
+
+  if(!contact || !newPass) return showToast('Bütün xanaları doldurun!');
+
+  const uIndex = usersDB.findIndex(u => u.contact === contact);
+  if(uIndex === -1) {
+    return showToast('Bu əlaqə vasitəsi ilə istifadəçi tapılmadı!');
+  }
+
+  usersDB[uIndex].pass = newPass;
+  user = usersDB[uIndex];
+  saveState();
+  showToast('Şifrəniz yeniləndi və giriş edildi!');
+  authMode = 'login';
   goPage('my');
 }
 
