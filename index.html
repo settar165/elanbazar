@@ -28,7 +28,7 @@
   .cat-title { font-size: 13px; font-weight: bold; margin-top: 4px; }
   
   .sec-title { font-size: 16px; font-weight: bold; margin: 12px 0 8px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
   
   .item-card { display: flex; gap: 10px; position: relative; cursor: pointer; }
   .item-card.is-vip { background: var(--vip-bg); border-color: var(--vip); }
@@ -38,13 +38,19 @@
   .item-price { font-size: 15px; font-weight: bold; color: var(--accent); margin: 0 0 4px; }
   .item-meta { font-size: 11px; color: var(--muted); }
   
-  .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+  .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
   .btn-del { background: var(--danger); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color:#fff; border:none; border-radius:4px; }
   .btn-vip { background: var(--vip); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color: #fff; border:none; border-radius:4px; }
   
-  .inp { width: 100%; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
-  label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .inp { width: 100%; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; outline: none; background: #fafafa; }
+  .inp:focus { border-color: var(--accent); background: #fff; }
+  label { font-size: 12px; font-weight: 600; color: #4a5568; display: block; margin-bottom: 4px; }
   
+  /* Auth Tabs */
+  .auth-tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+  .auth-tab { flex: 1; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; color: var(--muted); }
+  .auth-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); margin-bottom: -2px; }
+
   .b-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 50; }
   .b-nav a { flex: 1; text-align: center; padding: 8px 0; color: var(--muted); text-decoration: none; font-size: 11px; cursor: pointer; }
   .b-nav a.active { color: var(--accent); font-weight: bold; }
@@ -86,14 +92,11 @@ const CATS = [
   {id:'is', name:'İş elanları', icon:'💼'}
 ];
 
-let items = JSON.parse(localStorage.getItem('eb_items')) || [
-  {id:'1', title:'iPhone 13 Pro 128GB', cat:'telefon', price:1350, city:'Bakı', name:'Əli', phone:'0501234567', desc:'Təmiz telefondur.', vip:true, uid:'0'},
-  {id:'2', title:'BMW 525i 2002', cat:'neqliyyat', price:12000, city:'Gəncə', name:'Vusal', phone:'0559876543', desc:'Əla vəziyyətdə.', vip:false, uid:'0'}
-];
-
+let items = JSON.parse(localStorage.getItem('eb_items')) || [];
 let user = JSON.parse(localStorage.getItem('eb_user')) || null;
 let page = 'home';
 let pageData = null;
+let authMode = 'login'; // 'login' or 'register'
 
 function saveState() {
   localStorage.setItem('eb_items', JSON.stringify(items));
@@ -132,6 +135,11 @@ function renderNav() {
   document.getElementById('n-home').className = page==='home'?'active':'';
   document.getElementById('n-add').className = page==='add'?'active':'';
   document.getElementById('n-my').className = page==='my'?'active':'';
+}
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  render();
 }
 
 function render() {
@@ -207,8 +215,8 @@ function render() {
     app.innerHTML = `
       <div class="card">
         <h3>${user.name}</h3>
-        <p>Telefon: ${user.phone || 'Təyin edilməyib'}</p>
-        <p>Balans: <b>${user.bonus||0} Bonus</b></p>
+        <p><b>E-poçt / Telefon:</b> ${user.contact || 'Qeyd edilməyib'}</p>
+        <p><b>Balans:</b> ${user.bonus||0} Bonus</p>
         <button class="btn" style="background:var(--danger);" onclick="logout()">Çıxış et</button>
       </div>
       <div class="sec-title">Elanlarım (${myItems.length})</div>
@@ -218,18 +226,31 @@ function render() {
   else if(page === 'auth') {
     app.innerHTML = `
       <div class="card">
-        <div class="sec-title">Giriş və ya Qeydiyyat</div>
-        <label>Adınız</label>
-        <input type="text" id="a-name" class="inp" placeholder="Məs: Əli">
-        <label>Telefon</label>
-        <input type="text" id="a-phone" class="inp" placeholder="0501234567">
-        <button class="btn" onclick="submitAuth()">Daxil ol</button>
+        <div class="auth-tabs">
+          <div class="auth-tab ${authMode==='login'?'active':''}" onclick="switchAuthTab('login')">Daxil ol</div>
+          <div class="auth-tab ${authMode==='register'?'active':''}" onclick="switchAuthTab('register')">Qeydiyyat</div>
+        </div>
+        ${authMode === 'login' ? `
+          <label>E-poçt və ya Telefon</label>
+          <input type="text" id="l-contact" class="inp" placeholder="Məs: 0501234567 və ya mail@example.com">
+          <label>Şifrə</label>
+          <input type="password" id="l-pass" class="inp" placeholder="••••••••">
+          <button class="btn" onclick="submitLogin()">Daxil ol</button>
+        ` : `
+          <label>Ad və Soyad</label>
+          <input type="text" id="r-name" class="inp" placeholder="Məs: Əli Məmmədov">
+          <label>E-poçt və ya Telefon</label>
+          <input type="text" id="r-contact" class="inp" placeholder="0501234567 və ya mail@example.com">
+          <label>Şifrə</label>
+          <input type="password" id="r-pass" class="inp" placeholder="Müştəri şifrəsi">
+          <button class="btn" onclick="submitRegister()">Qeydiyyatdan keç (+10 Bonus)</button>
+        `}
       </div>`;
   }
 }
 
 function renderList(list, isMy = false) {
-  if(!list.length) return `<p style="text-align:center;color:var(--muted);">Elan tapılmadı.</p>`;
+  if(!list.length) return `<div class="card" style="text-align:center;color:var(--muted);padding:30px 10px;">Hələ ki heç bir elan yoxdur.</div>`;
   let html = '';
   list.forEach(i => {
     html += `
@@ -265,7 +286,7 @@ function submitAdd() {
     city: document.getElementById('f-city').value,
     desc: document.getElementById('f-desc').value,
     name: user.name,
-    phone: user.phone || 'Qeyd edilməyib',
+    phone: user.contact || 'Qeyd edilməyib',
     uid: user.id,
     vip: false
   });
@@ -276,14 +297,26 @@ function submitAdd() {
   goPage('my');
 }
 
-function submitAuth() {
-  const name = document.getElementById('a-name').value.trim();
-  const phone = document.getElementById('a-phone').value.trim();
-  if(!name) return showToast('Adınızı daxil edin!');
+function submitLogin() {
+  const contact = document.getElementById('l-contact').value.trim();
+  const pass = document.getElementById('l-pass').value.trim();
+  if(!contact || !pass) return showToast('Xanaları doldurun!');
   
-  user = { id: 'u_' + Date.now(), name: name, phone: phone, bonus: 10 };
+  user = { id: 'u_' + Date.now(), name: contact.split('@')[0], contact: contact, bonus: 10 };
   saveState();
   showToast('Xoş gəldiniz!');
+  goPage('my');
+}
+
+function submitRegister() {
+  const name = document.getElementById('r-name').value.trim();
+  const contact = document.getElementById('r-contact').value.trim();
+  const pass = document.getElementById('r-pass').value.trim();
+  if(!name || !contact || !pass) return showToast('Bütün xanaları doldurun!');
+  
+  user = { id: 'u_' + Date.now(), name: name, contact: contact, bonus: 10 };
+  saveState();
+  showToast('Qeydiyyat tamamlandı! +10 Bonus verilmişdir.');
   goPage('my');
 }
 
