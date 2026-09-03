@@ -107,6 +107,11 @@ let pageData = null;
 let authMode = 'login'; // login | register | forgot
 let uploadedImages = [];
 
+// OTP (Telefon Təsdiq) Dəyişənləri
+let generatedOTP = null;
+let otpStep = false;
+let pendingUserData = null;
+
 function saveState() {
   localStorage.setItem('eb_items', JSON.stringify(items));
   localStorage.setItem('eb_users', JSON.stringify(usersDB));
@@ -124,6 +129,8 @@ function goPage(p, data=null) {
   page = p;
   pageData = data;
   uploadedImages = [];
+  otpStep = false;
+  generatedOTP = null;
   render();
   window.scrollTo(0, 0);
 }
@@ -150,6 +157,8 @@ function renderNav() {
 
 function switchAuthTab(mode) {
   authMode = mode;
+  otpStep = false;
+  generatedOTP = null;
   render();
 }
 
@@ -266,16 +275,31 @@ function render() {
     `;
   }
   else if(page === 'auth') {
+    if(otpStep) {
+      app.innerHTML = `
+        <div class="card">
+          <div class="sec-title" style="margin-top:0;">📲 Nömrəni Təsdiqlə</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;"><b>${pendingUserData.contact}</b> nömrəsinə 4 rəqəmli təsdiq kodu göndərildi.</p>
+          <label>SMS Təsdiq Kodu</label>
+          <input type="number" id="otp-code" class="inp" placeholder="1234">
+          <button class="btn" onclick="verifyOTP()">Təsdiqlə və Davam et</button>
+          <div style="text-align:center;margin-top:12px;">
+            <a onclick="otpStep=false;render();" style="font-size:12px;color:var(--accent);cursor:pointer;font-weight:bold;">Geri qayıt</a>
+          </div>
+        </div>`;
+      return;
+    }
+
     if(authMode === 'forgot') {
       app.innerHTML = `
         <div class="card">
           <div class="sec-title" style="margin-top:0;">Şifrəni Yenilə</div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Qeydiyyatdan keçdiyiniz E-poçt və ya Telefon nömrəsini yazaraq yeni şifrə təyin edin.</p>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Nömrənizi daxil edin, SMS kodu daxil edərək yeni şifrə təyin edin.</p>
           <label>E-poçt və ya Telefon</label>
           <input type="text" id="reset-contact" class="inp" placeholder="0501234567">
           <label>Yeni Şifrə</label>
           <input type="password" id="reset-pass" class="inp" placeholder="Yeni şifrəniz">
-          <button class="btn" onclick="submitResetPassword()">Şifrəni Dəyiş və Daxil Ol</button>
+          <button class="btn" onclick="requestResetPassword()">SMS Kod Göndər</button>
           <div style="text-align:center;margin-top:12px;">
             <a onclick="switchAuthTab('login')" style="font-size:12px;color:var(--accent);cursor:pointer;font-weight:bold;">Giriş səhifəsinə qayıt</a>
           </div>
@@ -303,7 +327,7 @@ function render() {
           <input type="text" id="r-contact" class="inp" placeholder="0501234567">
           <label>Şifrə</label>
           <input type="password" id="r-pass" class="inp" placeholder="Şifrəniz">
-          <button class="btn" onclick="submitRegister()">Qeydiyyatdan keç (+10 Bonus)</button>
+          <button class="btn" onclick="requestRegisterOTP()">Qeydiyyatdan keç (+10 Bonus)</button>
         `}
       </div>`;
   }
@@ -362,7 +386,8 @@ function submitAdd() {
   goPage('my');
 }
 
-function submitRegister() {
+// Qeydiyyat üçün OTP Tələbi
+function requestRegisterOTP() {
   const name = document.getElementById('r-name').value.trim();
   const contact = document.getElementById('r-contact').value.trim();
   const pass = document.getElementById('r-pass').value.trim();
@@ -372,18 +397,67 @@ function submitRegister() {
   const exists = usersDB.find(u => u.contact === contact);
   if(exists) return showToast('Bu əlaqə vasitəsi ilə artıq qeydiyyat var!');
   
-  const newUser = {
-    id: 'u_' + Date.now(),
-    name: name,
-    contact: contact,
-    pass: pass,
-    bonus: 10
-  };
+  generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+  pendingUserData = { type: 'register', name, contact, pass };
+  otpStep = true;
+  render();
   
-  usersDB.push(newUser);
-  user = newUser;
-  saveState();
-  showToast('Qeydiyyat tamamlandı! +10 Bonus verilmişdir.');
+  setTimeout(() => {
+    alert(`📲 SMS Təsdiq Kodu: ${generatedOTP}`);
+  }, 300);
+}
+
+// Şifrə Yeniləmək üçün OTP Tələbi
+function requestResetPassword() {
+  const contact = document.getElementById('reset-contact').value.trim();
+  const newPass = document.getElementById('reset-pass').value.trim();
+
+  if(!contact || !newPass) return showToast('Bütün xanaları doldurun!');
+
+  const uIndex = usersDB.findIndex(u => u.contact === contact);
+  if(uIndex === -1) {
+    return showToast('Bu əlaqə vasitəsi ilə istifadəçi tapılmadı!');
+  }
+
+  generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+  pendingUserData = { type: 'reset', contact, newPass, userIndex: uIndex };
+  otpStep = true;
+  render();
+
+  setTimeout(() => {
+    alert(`📲 SMS Təsdiq Kodu: ${generatedOTP}`);
+  }, 300);
+}
+
+// OTP Kodu Yoxlamaq
+function verifyOTP() {
+  const inputOTP = document.getElementById('otp-code').value.trim();
+  if(inputOTP !== generatedOTP) {
+    return showToast('Təsdiq kodu yanlışdır!');
+  }
+
+  if(pendingUserData.type === 'register') {
+    const newUser = {
+      id: 'u_' + Date.now(),
+      name: pendingUserData.name,
+      contact: pendingUserData.contact,
+      pass: pendingUserData.pass,
+      bonus: 10
+    };
+    usersDB.push(newUser);
+    user = newUser;
+    saveState();
+    showToast('Nömrə təsdiqləndi! Qeydiyyat tamamlandı (+10 Bonus).');
+  } else if(pendingUserData.type === 'reset') {
+    usersDB[pendingUserData.userIndex].pass = pendingUserData.newPass;
+    user = usersDB[pendingUserData.userIndex];
+    saveState();
+    showToast('Nömrə təsdiqləndi! Şifrəniz yeniləndi.');
+  }
+
+  otpStep = false;
+  generatedOTP = null;
+  pendingUserData = null;
   goPage('my');
 }
 
@@ -405,56 +479,6 @@ function submitLogin() {
   goPage('my');
 }
 
-function submitResetPassword() {
-  const contact = document.getElementById('reset-contact').value.trim();
-  const newPass = document.getElementById('reset-pass').value.trim();
-
-  if(!contact || !newPass) return showToast('Bütün xanaları doldurun!');
-
-  const uIndex = usersDB.findIndex(u => u.contact === contact);
-  if(uIndex === -1) {
-    return showToast('Bu əlaqə vasitəsi ilə istifadəçi tapılmadı!');
-  }
-
-  usersDB[uIndex].pass = newPass;
-  user = usersDB[uIndex];
-  saveState();
-  showToast('Şifrəniz yeniləndi və giriş edildi!');
-  authMode = 'login';
-  goPage('my');
-}
-
 function logout() {
   user = null;
-  localStorage.removeItem('eb_user');
-  showToast('Çıxış edildi.');
-  goPage('home');
-}
-
-function makeVip(id) {
-  if((user.bonus||0) < 10) return showToast('Kifayət qədər bonus yoxdur (10 B lazımdır)');
-  const item = items.find(i => i.id === id);
-  if(item) {
-    item.vip = true;
-    user.bonus -= 10;
-    
-    const uIndex = usersDB.findIndex(u => u.id === user.id);
-    if(uIndex !== -1) usersDB[uIndex].bonus = user.bonus;
-    
-    saveState();
-    showToast('Elan VIP oldu!');
-    render();
-  }
-}
-
-function delItem(id) {
-  items = items.filter(i => i.id !== id);
-  saveState();
-  showToast('Elan silindi.');
-  render();
-}
-
-window.onload = render;
-</script>
-</body>
-</html>
+  localStorage.
