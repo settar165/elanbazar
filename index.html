@@ -19,34 +19,34 @@
   .s-box input { flex: 1; border: none; padding: 8px; font-size: 14px; outline: none; }
   .s-box button { border: none; background: #fff; padding: 0 8px; cursor: pointer; }
   .user-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-  
+
   main { max-width: 480px; margin: 0 auto; padding: 12px; padding-bottom: 70px; }
-  
+
   .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
   .cat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; }
   .cat-icon { font-size: 22px; }
   .cat-title { font-size: 13px; font-weight: bold; margin-top: 4px; }
-  
+
   .sec-title { font-size: 16px; font-weight: bold; margin: 12px 0 8px; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  
+
   .item-card { display: flex; gap: 10px; position: relative; cursor: pointer; }
   .item-card.is-vip { background: var(--vip-bg); border-color: var(--vip); }
   .vip-badge { position: absolute; top: 6px; right: 6px; background: var(--vip); color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-  .item-img { width: 70px; height: 70px; background: #f0f2f5; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; overflow: hidden; object-fit: cover; }
+  .item-img { width: 70px; height: 70px; background: #f0f2f5; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; overflow: hidden; }
   .item-img img { width: 100%; height: 100%; object-fit: cover; }
   .item-title { font-size: 14px; font-weight: 500; margin: 0 0 4px; }
   .item-price { font-size: 15px; font-weight: bold; color: var(--accent); margin: 0 0 4px; }
   .item-meta { font-size: 11px; color: var(--muted); }
-  
+
   .btn { width: 100%; background: var(--accent); color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 10px; }
   .btn-del { background: var(--danger); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color:#fff; border:none; border-radius:4px; }
   .btn-vip { background: var(--vip); font-size: 12px; padding: 6px 10px; width: auto; margin: 0; color: #fff; border:none; border-radius:4px; }
-  
+
   .inp { width: 100%; border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; outline: none; background: #fafafa; }
   .inp:focus { border-color: var(--accent); background: #fff; }
   label { font-size: 12px; font-weight: 600; color: #4a5568; display: block; margin-bottom: 4px; }
-  
+
   .img-preview-grid { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 10px; }
   .img-preview-item { width: 70px; height: 70px; border-radius: 6px; border: 1px solid var(--border); object-fit: cover; flex-shrink: 0; }
   .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
@@ -61,7 +61,7 @@
   .b-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); display: flex; z-index: 50; }
   .b-nav a { flex: 1; text-align: center; padding: 8px 0; color: var(--muted); text-decoration: none; font-size: 11px; cursor: pointer; }
   .b-nav a.active { color: var(--accent); font-weight: bold; }
-  
+
   .toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; display: none; z-index: 100; }
 </style>
 </head>
@@ -104,13 +104,21 @@ let usersDB = JSON.parse(localStorage.getItem('eb_users')) || [];
 let user = JSON.parse(localStorage.getItem('eb_user')) || null;
 let page = 'home';
 let pageData = null;
-let authMode = 'login'; // login | register | forgot
+let authMode = 'login';
 let uploadedImages = [];
 
-// OTP (Telefon Təsdiq) Dəyişənləri
 let generatedOTP = null;
 let otpStep = false;
 let pendingUserData = null;
+
+// --- FIX: HTML-escape helper, bütün istifadəçi mətnləri innerHTML-ə yazılmazdan
+// əvvəl bu funksiyadan keçirilir (XSS və markup pozulmasının qarşısını alır) ---
+function esc(str) {
+  if(str === undefined || str === null) return '';
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[m]));
+}
 
 function saveState() {
   localStorage.setItem('eb_items', JSON.stringify(items));
@@ -143,7 +151,7 @@ function search() {
 function renderHeader() {
   const box = document.getElementById('u-header');
   if(user) {
-    box.innerHTML = `<button class="user-btn" onclick="goPage('my')">${user.name} (${user.bonus||0} B)</button>`;
+    box.innerHTML = `<button class="user-btn" onclick="goPage('my')">${esc(user.name)} (${user.bonus||0} B)</button>`;
   } else {
     box.innerHTML = `<button class="user-btn" onclick="goPage('auth')">Giriş</button>`;
   }
@@ -165,7 +173,7 @@ function switchAuthTab(mode) {
 function handleImageUpload(event) {
   const files = Array.from(event.target.files);
   uploadedImages = [];
-  
+
   files.forEach(file => {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -196,22 +204,25 @@ function render() {
       </div>`;
     });
     html += `</div><div class="sec-title">Son Elanlar</div>`;
-    html += renderList(items);
+    // FIX: VIP elanlar əsas siyahıda əvvəl göstərilir
+    const sorted = [...items].sort((a,b) => (b.vip?1:0) - (a.vip?1:0));
+    html += renderList(sorted);
     app.innerHTML = html;
   }
   else if(page === 'cat') {
     const catObj = CATS.find(c=>c.id===pageData);
     const list = items.filter(i => i.cat === pageData);
-    app.innerHTML = `<div class="sec-title">${catObj ? catObj.name : 'Kateqoriya'} elanları</div>` + renderList(list);
+    app.innerHTML = `<div class="sec-title">${catObj ? esc(catObj.name) : 'Kateqoriya'} elanları</div>` + renderList(list);
   }
   else if(page === 'search') {
-    const list = items.filter(i => i.title.toLowerCase().includes(pageData.toLowerCase()));
-    app.innerHTML = `<div class="sec-title">Axtarış: "${pageData}"</div>` + renderList(list);
+    const query = (pageData || '').toLowerCase();
+    const list = items.filter(i => i.title && i.title.toLowerCase().includes(query));
+    app.innerHTML = `<div class="sec-title">Axtarış: "${esc(pageData)}"</div>` + renderList(list);
   }
   else if(page === 'detail') {
     const item = items.find(i => i.id === pageData);
-    if(!item) return app.innerHTML = 'Elan tapılmadı';
-    
+    if(!item) { app.innerHTML = 'Elan tapılmadı'; return; }
+
     let imagesHtml = '';
     if(item.images && item.images.length > 0) {
       imagesHtml = `<div class="gallery-grid">` + item.images.map(img => `<img src="${img}" class="gallery-img">`).join('') + `</div>`;
@@ -222,13 +233,13 @@ function render() {
     app.innerHTML = `
       <div class="card">
         ${imagesHtml}
-        <h2>${item.title}</h2>
-        <h3 style="color:var(--accent);">${item.price} AZN</h3>
-        <p><b>Şəhər:</b> ${item.city}</p>
-        <p><b>Məlumat:</b> ${item.desc || 'Yoxdur'}</p>
+        <h2>${esc(item.title)}</h2>
+        <h3 style="color:var(--accent);">${esc(item.price)} AZN</h3>
+        <p><b>Şəhər:</b> ${esc(item.city)}</p>
+        <p><b>Məlumat:</b> ${esc(item.desc) || 'Yoxdur'}</p>
         <hr style="border:none;border-top:1px solid var(--border);">
-        <p><b>Satan:</b> ${item.name}</p>
-        <button class="btn" onclick="showToast('Əlaqə: ${item.phone}')">📞 Nömrəni göstər</button>
+        <p><b>Satan:</b> ${esc(item.name)}</p>
+        <button class="btn" onclick="showToast('Əlaqə: ${esc(item.phone)}')">📞 Nömrəni göstər</button>
       </div>`;
   }
   else if(page === 'add') {
@@ -249,10 +260,10 @@ function render() {
           ${CATS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
         </select>
         <label>Qiymət (AZN)</label>
-        <input type="number" id="f-price" class="inp" placeholder="100">
+        <input type="number" id="f-price" class="inp" placeholder="100" min="1">
         <label>Şəhər</label>
         <input type="text" id="f-city" class="inp" value="Bakı">
-        <label>Şəkillər əlavə et (birdən çox seçə bilərsiniz)</label>
+        <label>Şəkillər əlavə et</label>
         <input type="file" id="f-imgs" class="inp" accept="image/*" multiple onchange="handleImageUpload(event)">
         <div id="img-previews" class="img-preview-grid"></div>
         <label>Ətraflı</label>
@@ -261,12 +272,12 @@ function render() {
       </div>`;
   }
   else if(page === 'my') {
-    if(!user) return goPage('auth');
+    if(!user) { goPage('auth'); return; }
     const myItems = items.filter(i => i.uid === user.id);
     app.innerHTML = `
       <div class="card">
-        <h3>${user.name}</h3>
-        <p><b>E-poçt / Telefon:</b> ${user.contact || 'Qeyd edilməyib'}</p>
+        <h3>${esc(user.name)}</h3>
+        <p><b>E-poçt / Telefon:</b> ${esc(user.contact) || 'Qeyd edilməyib'}</p>
         <p><b>Balans:</b> ${user.bonus||0} Bonus</p>
         <button class="btn" style="background:var(--danger);" onclick="logout()">Çıxış et</button>
       </div>
@@ -279,7 +290,7 @@ function render() {
       app.innerHTML = `
         <div class="card">
           <div class="sec-title" style="margin-top:0;">📲 Nömrəni Təsdiqlə</div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;"><b>${pendingUserData.contact}</b> nömrəsinə 4 rəqəmli təsdiq kodu göndərildi.</p>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;"><b>${esc(pendingUserData.contact)}</b> nömrəsinə 4 rəqəmli təsdiq kodu göndərildi.</p>
           <label>SMS Təsdiq Kodu</label>
           <input type="number" id="otp-code" class="inp" placeholder="1234">
           <button class="btn" onclick="verifyOTP()">Təsdiqlə və Davam et</button>
@@ -343,9 +354,9 @@ function renderList(list, isMy = false) {
         ${i.vip ? `<div class="vip-badge">VIP</div>` : ''}
         <div class="item-img">${thumb}</div>
         <div style="flex:1;">
-          <div class="item-title">${i.title}</div>
-          <div class="item-price">${i.price} AZN</div>
-          <div class="item-meta">${i.city}</div>
+          <div class="item-title">${esc(i.title)}</div>
+          <div class="item-price">${esc(i.price)} AZN</div>
+          <div class="item-meta">${esc(i.city)}</div>
           ${isMy ? `
             <div style="margin-top:6px;display:flex;gap:6px;" onclick="event.stopPropagation()">
               ${!i.vip ? `<button class="btn-vip" onclick="makeVip('${i.id}')">VIP et (10B)</button>` : ''}
@@ -361,8 +372,11 @@ function renderList(list, isMy = false) {
 function submitAdd() {
   const title = document.getElementById('f-title').value.trim();
   const price = document.getElementById('f-price').value;
+
   if(!title || !price) return showToast('Başlıq və qiyməti yazın!');
-  
+  // FIX: mənfi/sıfır qiymətin qarşısı alınır
+  if(Number(price) <= 0 || isNaN(Number(price))) return showToast('Düzgün qiymət daxil edin!');
+
   items.unshift({
     id: Date.now().toString(),
     title: title,
@@ -376,38 +390,36 @@ function submitAdd() {
     uid: user.id,
     vip: false
   });
-  
+
   user.bonus = (user.bonus || 0) + 5;
   const uIndex = usersDB.findIndex(u => u.id === user.id);
   if(uIndex !== -1) usersDB[uIndex].bonus = user.bonus;
-  
+
   saveState();
-  showToast('Elan ekləndi! +5 Bonus');
+  showToast('Elan əlavə edildi! +5 Bonus');
   goPage('my');
 }
 
-// Qeydiyyat üçün OTP Tələbi
 function requestRegisterOTP() {
   const name = document.getElementById('r-name').value.trim();
   const contact = document.getElementById('r-contact').value.trim();
   const pass = document.getElementById('r-pass').value.trim();
-  
+
   if(!name || !contact || !pass) return showToast('Bütün xanaları doldurun!');
-  
+
   const exists = usersDB.find(u => u.contact === contact);
   if(exists) return showToast('Bu əlaqə vasitəsi ilə artıq qeydiyyat var!');
-  
+
   generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
   pendingUserData = { type: 'register', name, contact, pass };
   otpStep = true;
   render();
-  
+
   setTimeout(() => {
     alert(`📲 SMS Təsdiq Kodu: ${generatedOTP}`);
   }, 300);
 }
 
-// Şifrə Yeniləmək üçün OTP Tələbi
 function requestResetPassword() {
   const contact = document.getElementById('reset-contact').value.trim();
   const newPass = document.getElementById('reset-pass').value.trim();
@@ -429,7 +441,6 @@ function requestResetPassword() {
   }, 300);
 }
 
-// OTP Kodu Yoxlamaq
 function verifyOTP() {
   const inputOTP = document.getElementById('otp-code').value.trim();
   if(inputOTP !== generatedOTP) {
@@ -464,15 +475,15 @@ function verifyOTP() {
 function submitLogin() {
   const contact = document.getElementById('l-contact').value.trim();
   const pass = document.getElementById('l-pass').value.trim();
-  
+
   if(!contact || !pass) return showToast('Xanaları doldurun!');
-  
+
   const foundUser = usersDB.find(u => u.contact === contact && u.pass === pass);
-  
+
   if(!foundUser) {
     return showToast('Məlumatlar yanlışdır və ya istifadəçi yoxdur!');
   }
-  
+
   user = foundUser;
   saveState();
   showToast('Xoş gəldiniz!');
@@ -481,4 +492,38 @@ function submitLogin() {
 
 function logout() {
   user = null;
-  localStorage.
+  localStorage.removeItem('eb_user');
+  showToast('Çıxış edildi.');
+  goPage('home');
+}
+
+// FIX: funksiya yarımçıq kəsilmişdi — VIP məntiqi tamamlandı
+function makeVip(id) {
+  if((user.bonus||0) < 10) return showToast('Kifayət qədər bonusunuz yoxdur!');
+
+  const item = items.find(i => i.id === id);
+  if(!item) return showToast('Elan tapılmadı!');
+
+  item.vip = true;
+  user.bonus -= 10;
+  const uIndex = usersDB.findIndex(u => u.id === user.id);
+  if(uIndex !== -1) usersDB[uIndex].bonus = user.bonus;
+
+  saveState();
+  showToast('Elan VIP edildi!');
+  render();
+}
+
+// FIX: bu funksiya ümumiyyətlə yox idi — "Sil" düyməsi ReferenceError verirdi
+function delItem(id) {
+  if(!confirm('Bu elanı silmək istədiyinizə əminsiniz?')) return;
+  items = items.filter(i => i.id !== id);
+  saveState();
+  showToast('Elan silindi.');
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
